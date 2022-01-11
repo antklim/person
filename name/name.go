@@ -7,14 +7,9 @@ import "strings"
 // Every name part trimmed from leading and trailing white spaces. Name part
 // that have value of empty string is omitted from joining. Name parts joined
 // with a single white space separator.
-func FullName(fallback string, parts ...string) string {
+func FullName(parts []string) string {
 	newParts := nonEmptyParts(parts)
 	fullName := strings.Join(newParts, " ")
-
-	if fullName == "" {
-		return fallback
-	}
-
 	return fullName
 }
 
