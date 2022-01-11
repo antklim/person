@@ -2,10 +2,11 @@ package name
 
 import "strings"
 
-// FullName returns a person's full name. If a join of all name parts result to
-// an empty string then fallback returned. Otherwise name parts returned joined
-// with a whitespace.
-// Note: non printable chanracters are not handled and not trimmed.
+// FullName returns a person's full name as a result of joining parts of the
+// name.
+// Every name part trimmed from leading and trailing white spaces. Name part
+// that have value of empty string is omitted from joining. Name parts joined
+// with a single white space separator.
 func FullName(fallback string, parts ...string) string {
 	newParts := nonEmptyParts(parts)
 	fullName := strings.Join(newParts, " ")
@@ -29,4 +30,26 @@ func nonEmptyParts(parts []string) []string {
 		}
 	}
 	return filteredParts
+}
+
+// FullNameDefault returns a person's full name as a result of joining parts of
+// the name. If the joining of name parts produces an empty string then default
+// value d returned.
+func FullNameDefault(parts []string, d string) string {
+	return ""
+}
+
+// FullNameFormatFunc returns a person's full name as a result of joining parts
+// of the name. Every name part is formatted with format function f. Formatted
+// name parts then joined.
+func FullNameFormatFunc(parts []string, f func(string) string) string {
+	return ""
+}
+
+// FullNameDefaultFormatFunc returns a person's full name as a result of joining
+// parts of the name. Every name part is formatted with format function f.
+// Formatted name parts then joined. If the joining of name parts produces an
+// empty string then default value d returned.
+func FullNameDefaultFormatFunc(parts []string, d string, f func(string) string) string {
+	return ""
 }
