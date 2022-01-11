@@ -31,7 +31,10 @@ func nonEmptyParts(parts []string) []string {
 // the name. If the joining of name parts produces an empty string then default
 // value d returned.
 func FullNameDefault(parts []string, d string) string {
-	return ""
+	if n := FullName(parts); n != "" {
+		return n
+	}
+	return d
 }
 
 // FullNameFormatFunc returns a person's full name as a result of joining parts

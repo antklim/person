@@ -6,6 +6,13 @@ import (
 	"github.com/antklim/person/name"
 )
 
+var nameParts = [][]string{
+	nil,
+	{},
+	{"", "     ", "	"},
+	{" Johann", "     ", "   ", "	Sebastian  ", "Bach"},
+}
+
 func TestFullName(t *testing.T) {
 	testCases := []struct {
 		desc  string
@@ -32,5 +39,23 @@ func TestFullName(t *testing.T) {
 				t.Errorf("FullName(%v) = %s, want %s", tC.parts, got, tC.want)
 			}
 		})
+	}
+}
+
+func TestFullNameDefault(t *testing.T) {
+	dflt := "John Doe"
+	expected := []string{
+		dflt,
+		dflt,
+		dflt,
+		"Johann Sebastian Bach",
+	}
+
+	for i, v := range nameParts {
+		want := expected[i]
+		got := name.FullNameDefault(v, dflt)
+		if got != want {
+			t.Errorf("FullNameDefault(%v, %s) = %s, want %s", v, dflt, got, want)
+		}
 	}
 }
