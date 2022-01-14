@@ -71,3 +71,20 @@ func TestFullNameFormatFunc(t *testing.T) {
 		}
 	}
 }
+
+func TestFullNameDefaultFormatFunc(t *testing.T) {
+	dflt := "John Doe"
+	expected := []string{
+		dflt,
+		dflt,
+		"John",
+		"Johann Sebastian Bach",
+	}
+	for i, v := range nameParts {
+		want := expected[i]
+		got := name.FullNameDefaultFormatFunc(v, dflt, formatFunc)
+		if got != want {
+			t.Errorf("FullNameDefaultFormatFunc(%v, %s, formatFunc) = %s, want %s", v, dflt, got, want)
+		}
+	}
+}

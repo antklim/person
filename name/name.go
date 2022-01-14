@@ -37,7 +37,12 @@ func FullNameFormatFunc(parts []string, f func(string) string) string {
 // Formatted name parts then joined. If the joining of name parts produces an
 // empty string then default value d returned.
 func FullNameDefaultFormatFunc(parts []string, d string, f func(string) string) string {
-	return ""
+	p := formatAndFilter(parts, f, defaultFilter)
+	fullName := strings.Join(p, " ")
+	if fullName == "" {
+		return d
+	}
+	return fullName
 }
 
 type formatFunc func(string) string
