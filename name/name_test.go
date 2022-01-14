@@ -14,31 +14,19 @@ var nameParts = [][]string{
 }
 
 func TestFullName(t *testing.T) {
-	testCases := []struct {
-		desc  string
-		parts []string
-		want  string
-	}{
-		{
-			desc: "returns an empty string when no name parts provided",
-		},
-		{
-			desc: "returns an empty string when all name parts trimmed to empty strings",
-			parts: []string{"", "     ", "	"},
-		},
-		{
-			desc: "returns joined name parts",
-			parts: []string{" Johann", "     ", "   ", "	Sebastian  ", "Bach"},
-			want: "Johann Sebastian Bach",
-		},
+	expected := []string{
+		"",
+		"",
+		"",
+		"Johann Sebastian Bach",
 	}
-	for _, tC := range testCases {
-		t.Run(tC.desc, func(t *testing.T) {
-			got := name.FullName(tC.parts)
-			if got != tC.want {
-				t.Errorf("FullName(%v) = %s, want %s", tC.parts, got, tC.want)
-			}
-		})
+
+	for i, v := range nameParts {
+		want := expected[i]
+		got := name.FullName(v)
+		if got != want {
+			t.Errorf("FullName(%v) = %s, want %s", v, got, want)
+		}
 	}
 }
 
