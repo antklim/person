@@ -8,23 +8,9 @@ import "strings"
 // that have value of empty string is omitted from joining. Name parts joined
 // with a single white space separator.
 func FullName(parts []string) string {
-	newParts := nonEmptyParts(parts)
-	fullName := strings.Join(newParts, " ")
+	p := formatAndFilter(parts, strings.TrimSpace, defaultFilter)
+	fullName := strings.Join(p, " ")
 	return fullName
-}
-
-func nonEmptyPart(p string) bool {
-	return p != ""
-}
-
-func nonEmptyParts(parts []string) []string {
-	var filteredParts []string
-	for _, p := range parts {
-		if p := strings.TrimSpace(p); nonEmptyPart(p) {
-			filteredParts = append(filteredParts, p)
-		}
-	}
-	return filteredParts
 }
 
 // FullNameDefault returns a person's full name as a result of joining parts of
@@ -50,4 +36,21 @@ func FullNameFormatFunc(parts []string, f func(string) string) string {
 // empty string then default value d returned.
 func FullNameDefaultFormatFunc(parts []string, d string, f func(string) string) string {
 	return ""
+}
+
+type formatFunc func(string) string
+type filterFunc func(string) bool
+
+func formatAndFilter(a []string, f formatFunc, ff filterFunc) []string {
+	var result []string
+	for _, s := range a {
+		if s := f(s); ff(s) {
+			result = append(result, s)
+		}
+	}
+	return result
+}
+
+func defaultFilter(s string) bool {
+	return s != ""
 }
