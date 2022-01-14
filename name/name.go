@@ -27,7 +27,9 @@ func FullNameDefault(parts []string, d string) string {
 // of the name. Every name part is formatted with format function f. Formatted
 // name parts then joined.
 func FullNameFormatFunc(parts []string, f func(string) string) string {
-	return ""
+	p := formatAndFilter(parts, f, defaultFilter)
+	fullName := strings.Join(p, " ")
+	return fullName
 }
 
 // FullNameDefaultFormatFunc returns a person's full name as a result of joining
