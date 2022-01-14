@@ -14,6 +14,13 @@ var nameParts = [][]string{
 	{" Johann", "     ", "   ", "	Sebastian  ", "Bach"},
 }
 
+func formatFunc(s string) string {
+	if s == " " {
+		return "John"
+	}
+	return strings.TrimSpace(s)
+}
+
 func TestFullName(t *testing.T) {
 	expected := []string{
 		"",
@@ -50,13 +57,6 @@ func TestFullNameDefault(t *testing.T) {
 }
 
 func TestFullNameFormatFunc(t *testing.T) {
-	f := func(s string) string {
-		if s == " " {
-			return "John"
-		}
-		return strings.TrimSpace(s)
-	}
-
 	expected := []string{
 		"",
 		"",
@@ -65,7 +65,7 @@ func TestFullNameFormatFunc(t *testing.T) {
 	}
 	for i, v := range nameParts {
 		want := expected[i]
-		got := name.FullNameFormatFunc(v, f)
+		got := name.FullNameFormatFunc(v, formatFunc)
 		if got != want {
 			t.Errorf("FullNameFormatFunc(%v, formatFunc) = %s, want %s", v, got, want)
 		}
