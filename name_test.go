@@ -1,10 +1,10 @@
-package name_test
+package person_test
 
 import (
 	"strings"
 	"testing"
 
-	"github.com/antklim/person/name"
+	"github.com/antklim/person"
 )
 
 var nameParts = [][]string{
@@ -31,7 +31,7 @@ func TestFullName(t *testing.T) {
 
 	for i, v := range nameParts {
 		want := expected[i]
-		got := name.FullName(v)
+		got := person.FullName(v)
 		if got != want {
 			t.Errorf("FullName(%v) = %s, want %s", v, got, want)
 		}
@@ -49,7 +49,7 @@ func TestFullNameDefault(t *testing.T) {
 
 	for i, v := range nameParts {
 		want := expected[i]
-		got := name.FullNameDefault(v, dflt)
+		got := person.FullNameDefault(v, dflt)
 		if got != want {
 			t.Errorf("FullNameDefault(%v, %s) = %s, want %s", v, dflt, got, want)
 		}
@@ -65,7 +65,7 @@ func TestFullNameFormatFunc(t *testing.T) {
 	}
 	for i, v := range nameParts {
 		want := expected[i]
-		got := name.FullNameFormatFunc(v, formatFunc)
+		got := person.FullNameFormatFunc(v, formatFunc)
 		if got != want {
 			t.Errorf("FullNameFormatFunc(%v, formatFunc) = %s, want %s", v, got, want)
 		}
@@ -82,7 +82,7 @@ func TestFullNameDefaultFormatFunc(t *testing.T) {
 	}
 	for i, v := range nameParts {
 		want := expected[i]
-		got := name.FullNameDefaultFormatFunc(v, dflt, formatFunc)
+		got := person.FullNameDefaultFormatFunc(v, dflt, formatFunc)
 		if got != want {
 			t.Errorf("FullNameDefaultFormatFunc(%v, %s, formatFunc) = %s, want %s", v, dflt, got, want)
 		}
