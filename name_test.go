@@ -11,7 +11,7 @@ var nameParts = [][]string{
 	nil,
 	{},
 	{"", "     ", " "},
-	{" Johann", "     ", "   ", "	Sebastian  ", "Bach"},
+	{" Johann", "     ", "   ", " Sebastian  ", "Bach"},
 }
 
 func formatFunc(s string) string {

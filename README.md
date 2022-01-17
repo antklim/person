@@ -19,6 +19,7 @@ func main() {
   nameParts := []string{" Johann", "     ", "   ", "	Sebastian  ", "Bach"}
   fullName := name.FullName(nameParts)
   fmt.Print(fullName)
+
   // Output:
   // Johann Sebastian Bach
 }
