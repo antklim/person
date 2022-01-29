@@ -46,3 +46,5 @@ func ExampleFullNameFormatFunc() {
 	// Output:
 	// Johann - Bach
 }
+
+// TODO: Add Age examples

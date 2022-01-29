@@ -8,12 +8,21 @@ import (
 // TODO: define format
 // TODO: AgeOn and Age should return error on invalid format
 
-var errDobIsAfterDate = errors.New("age on: date of birth is after provided date")
+var (
+	errDobIsInTheFuture       = errors.New("age: date of birth is in the future")
+	errDobIsInTheFutureOfDate = errors.New("age on: date of birth is in the future of provided date")
+)
 
-// Age returns persons age formatted using format.
+// Age returns persons age formatted using format. It calculates age based on
+// provided date of birth (dob) and current date. It returns an error when the
+// provided date of birth is in the future.
 // For example 31 years, 2 months, 1 week, and 2 days.
-func Age(dob time.Time, format string) string {
-	return ""
+func Age(dob time.Time, format string) (string, error) {
+	now := time.Now()
+	if dob.After(now) {
+		return "", errDobIsInTheFuture
+	}
+	return "", nil
 }
 
 // AgeOn returns persons age on a specific date formatted using format.
@@ -21,7 +30,7 @@ func Age(dob time.Time, format string) string {
 // For example 31 years, 2 months, 1 week, and 2 days.
 func AgeOn(dob, date time.Time, format string) (string, error) {
 	if dob.After(date) {
-		return "", errDobIsAfterDate
+		return "", errDobIsInTheFutureOfDate
 	}
 	return "2 days", nil
 }
