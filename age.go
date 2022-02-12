@@ -81,17 +81,21 @@ func formatDuration(d time.Duration, format string) string {
 	switch format {
 	case "%D":
 		days := int(d.Hours() / hoursInDay)
-		if days%10 == 1 && days != 11 {
-			return fmt.Sprintf("%d day", days)
-		}
-		return fmt.Sprintf("%d days", days)
+		return formatNoun(days, "day")
 	case "%Y":
 		years := int(d.Hours() / hoursInYear)
-		if years%10 == 1 && years != 11 {
-			return fmt.Sprintf("%d year", years)
-		}
-		return fmt.Sprintf("%d years", years)
+		return formatNoun(years, "year")
 	default:
 		return ""
 	}
+}
+
+// formatNoun takes a number n and noun s in singular form.
+// It returns a number and correct form of noun (singular or plural).
+func formatNoun(n int, s string) string {
+	f := "%d %s"
+	if n%10 != 1 || n == 11 {
+		f += "s"
+	}
+	return fmt.Sprintf(f, n, s)
 }
