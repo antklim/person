@@ -47,7 +47,12 @@ func AgeOn(dob, date time.Time, format string) (string, error) {
 }
 
 func IsAdult(dob time.Time, years time.Duration) bool {
-	return false
+	now := time.Now()
+	return isAdultOn(dob, now, years)
+}
+
+func IsAdultOn(dob, date time.Time, years time.Duration) bool {
+	return isAdultOn(dob, date, years)
 }
 
 func ageOn(dob, date time.Time, format string) (string, error) {
@@ -59,6 +64,10 @@ func ageOn(dob, date time.Time, format string) (string, error) {
 	age := formatDuration(d, format)
 
 	return age, nil
+}
+
+func isAdultOn(dob, date time.Time, years time.Duration) bool {
+	return false
 }
 
 func formatDuration(d time.Duration, format string) string {
