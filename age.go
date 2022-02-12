@@ -19,9 +19,9 @@ import (
 // y years and m weeks = 5 years and 3 weeks
 
 const (
-	hoursInDay      = 24
-	hoursInYear     = 365 * hoursInDay
-	hoursInLeapYear = 366 * hoursInDay
+	hoursInDay  = 24
+	hoursInYear = 365 * hoursInDay
+	// hoursInLeapYear = 366 * hoursInDay
 )
 
 var (
