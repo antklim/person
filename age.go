@@ -47,6 +47,14 @@ func Age(dob time.Time, format string) (string, error) {
 // It returns an error when provided date is before the date of birth (dob).
 // For example 31 years, 2 months, 1 week, and 2 days.
 func AgeOn(dob, date time.Time, format string) (string, error) {
+	return ageOn(dob, date, format)
+}
+
+func IsAdult(dob time.Time, years time.Duration) bool {
+	return false
+}
+
+func ageOn(dob, date time.Time, format string) (string, error) {
 	if dob.After(date) {
 		return "", errDobIsInTheFutureOfDate
 	}
@@ -55,10 +63,6 @@ func AgeOn(dob, date time.Time, format string) (string, error) {
 	age := formatDuration(d, format)
 
 	return age, nil
-}
-
-func IsAdult(dob time.Time, years time.Duration) bool {
-	return false
 }
 
 func formatDuration(d time.Duration, format string) string {
