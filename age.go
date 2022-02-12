@@ -71,16 +71,23 @@ func isAdultOn(dob, date time.Time, years time.Duration) bool {
 }
 
 func formatDuration(d time.Duration, format string) string {
+	// this function is responsible for printing the result
+	// result calculation should be done in another function - such as parse duration
+
+	// it should know the state of output
+	// for example, when format %Y %M %D - it outputs full years, months and days
+	// but when format is just %D - it outputs age in days (3653 days - 10 years and 3 days)
+
 	switch format {
-	case "D":
+	case "%D":
 		days := int(d.Hours() / hoursInDay)
-		if days%10 == 1 {
+		if days%10 == 1 && days != 11 {
 			return fmt.Sprintf("%d day", days)
 		}
 		return fmt.Sprintf("%d days", days)
-	case "Y":
+	case "%Y":
 		years := int(d.Hours() / hoursInYear)
-		if years%10 == 1 {
+		if years%10 == 1 && years != 11 {
 			return fmt.Sprintf("%d year", years)
 		}
 		return fmt.Sprintf("%d years", years)
