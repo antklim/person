@@ -50,10 +50,36 @@ func TestAgeOn(t *testing.T) {
 		format   string
 		expected string
 	}{
+		// TODO: add leap year test
 		{
 			date:     time.Date(1991, time.April, 3, 13, 17, 0, 0, time.UTC),
 			format:   "D",
 			expected: "2 days",
+		},
+		{
+			date:     time.Date(1991, time.April, 2, 13, 17, 0, 0, time.UTC),
+			format:   "D",
+			expected: "1 day",
+		},
+		{
+			date:     time.Date(1992, time.April, 2, 0, 0, 0, 0, time.UTC),
+			format:   "Y",
+			expected: "1 year",
+		},
+		{
+			date:     time.Date(1993, time.April, 2, 0, 0, 0, 0, time.UTC),
+			format:   "Y",
+			expected: "2 years",
+		},
+		{
+			date:     time.Date(2003, time.April, 2, 0, 0, 0, 0, time.UTC),
+			format:   "Y",
+			expected: "12 years",
+		},
+		{
+			date:     time.Date(2012, time.April, 2, 0, 0, 0, 0, time.UTC),
+			format:   "Y",
+			expected: "21 year",
 		},
 	}
 
