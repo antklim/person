@@ -27,8 +27,7 @@ const (
 )
 
 var (
-	errDobIsInTheFuture       = errors.New("date of birth is in the future")
-	errDobIsInTheFutureOfDate = errors.New("date of birth is after provided date")
+	errDobIsInTheFuture = errors.New("date of birth is in the future")
 )
 
 // Age returns persons age formatted using format. It calculates age based on
@@ -37,10 +36,7 @@ var (
 // For example 31 years, 2 months, 1 week, and 2 days.
 func Age(dob time.Time, format string) (string, error) {
 	now := time.Now()
-	if dob.After(now) {
-		return "", errDobIsInTheFuture
-	}
-	return "", nil
+	return ageOn(dob, now, format)
 }
 
 // AgeOn returns persons age on a specific date formatted using format.
@@ -56,7 +52,7 @@ func IsAdult(dob time.Time, years time.Duration) bool {
 
 func ageOn(dob, date time.Time, format string) (string, error) {
 	if dob.After(date) {
-		return "", errDobIsInTheFutureOfDate
+		return "", errDobIsInTheFuture
 	}
 
 	d := date.Sub(dob)
