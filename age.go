@@ -9,8 +9,8 @@ import (
 // TODO: AgeOn and Age should return error on invalid format
 
 var (
-	errDobIsInTheFuture       = errors.New("age: date of birth is in the future")
-	errDobIsInTheFutureOfDate = errors.New("age on: date of birth is in the future of provided date")
+	errDobIsInTheFuture       = errors.New("date of birth is in the future")
+	errDobIsInTheFutureOfDate = errors.New("date of birth is after provided date")
 )
 
 // Age returns persons age formatted using format. It calculates age based on

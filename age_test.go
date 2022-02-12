@@ -26,7 +26,7 @@ func TestAge(t *testing.T) {
 func TestAgeFails(t *testing.T) {
 	format := "D"
 	dob := time.Now().Add(time.Second)
-	expected := errors.New("age: date of birth is in the future")
+	expected := errors.New("date of birth is in the future")
 
 	got, err := person.Age(dob, format)
 	if err == nil {
@@ -72,7 +72,7 @@ func TestAgeOn(t *testing.T) {
 func TestAgeOnFails(t *testing.T) {
 	format := "D"
 	date := testDOB.Add(-time.Second)
-	expected := errors.New("age on: date of birth is in the future of provided date")
+	expected := errors.New("date of birth is after provided date")
 
 	got, err := person.AgeOn(testDOB, date, format)
 	if err == nil {
