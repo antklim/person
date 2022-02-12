@@ -9,14 +9,16 @@ import (
 // TODO: define format
 // TODO: AgeOn and Age should return error on invalid format
 
-// Y, y for years
-// M, m for months
-// W, w for weeks
-// D, d for days
-// H, h for hours
+// %Y, %y for years
+// %M, %m for months
+// %W, %w for weeks
+// %D, %d for days
+// %H, %h for hours
 //
-// Y, M, W, and D = 5 years, 4 months, 3 weeks, and 2 days
-// y years and m weeks = 5 years and 3 weeks
+// %Y, %M, %W, and %D = 5 years, 4 months, 3 weeks, and 2 days
+// %y years and %w weeks = 5 years and 3 weeks
+// Y years and w weeks = Y years and w weeks
+// %Z years = years (unknown verb replaced with '')
 
 const (
 	hoursInDay  = 24
