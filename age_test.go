@@ -153,3 +153,86 @@ func TestAgeOnFails(t *testing.T) {
 		}
 	}
 }
+
+// TODO: add tests with months and weeks
+// TODO: add tests with %y, %m, %w, %d, %h and custom time units names
+
+func TestFormatPrint(t *testing.T) {
+	t.Skip()
+	dob := time.Date(2000, time.January, 1, 0, 0, 0, 0, time.UTC)
+	date := time.Date(2010, time.April, 14, 12, 0, 0, 0, time.UTC)
+	testCases := []struct {
+		format   string
+		expected string
+	}{
+		{
+			format:   "%Y",
+			expected: "10 years",
+		},
+		{
+			format:   "%D",
+			expected: "3756 days",
+		},
+		{
+			format:   "%H",
+			expected: "90156 hours",
+		},
+		{
+			format:   "%Y and %D",
+			expected: "10 years and 103 days",
+		},
+		{
+			format:   "%Y and %H",
+			expected: "10 years and 2484 hours",
+		},
+		{
+			format:   "%Y, %D, and %H",
+			expected: "10 years, 103 days, and 12 hours",
+		},
+		{
+			format:   "%D and %H",
+			expected: "3756 days and 12 hours",
+		},
+	}
+	for _, tC := range testCases {
+		got, err := person.AgeOn(dob, date, tC.format)
+		if err != nil {
+			t.Errorf("AgeOn(%s, %s, %s) failed: %v", dob.Format(dateFmt),
+				date.Format(dateFmt), tC.format, err)
+		} else if got != tC.expected {
+			t.Errorf("AgeOn(%s, %s, %s) = %s, want %s", dob.Format(dateFmt),
+				date.Format(dateFmt), tC.format, got, tC.expected)
+		}
+	}
+}
+
+// TODO: add month, week, hour formatting
+
+func TestFormatParse(t *testing.T) {
+	// testCases := []struct {
+	// 	format   string
+	// 	expected AgeFormat
+	// }{
+	// 	{
+	// 		format:   "%Y",
+	// 		expected: AgeFormat{year: true, dyear: true},
+	// 	},
+	// 	{
+	// 		format:   "%y",
+	// 		expected: AgeFormat{year: true, dyear: false},
+	// 	},
+	// 	{
+	// 		format:   "%D",
+	// 		expected: AgeFormat{day: true, dday: true},
+	// 	},
+	// 	{
+	// 		format:   "%d",
+	// 		expected: AgeFormat{day: true, dday: false},
+	// 	},
+	// }
+	// for _, tC := range testCases {
+	// 	t.Run(tC.desc, func(t *testing.T) {
+
+	// 	})
+	// }
+}
