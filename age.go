@@ -23,20 +23,19 @@ import (
 const (
 	hoursInDay  = 24
 	hoursInYear = 365 * hoursInDay
-	// hoursInLeapYear = 366 * hoursInDay
 )
 
 var (
 	errDobIsInTheFuture = errors.New("date of birth is in the future")
 )
 
-var timeUnits = map[rune]string{
-	'Y': "year",
-	'M': "month",
-	'W': "week",
-	'D': "day",
-	'H': "hour",
-}
+// var timeUnits = map[rune]string{
+// 	'Y': "year",
+// 	'M': "month",
+// 	'W': "week",
+// 	'D': "day",
+// 	'H': "hour",
+// }
 
 // Age returns persons age formatted using format. It calculates age based on
 // provided date of birth (dob) and current date. It returns an error when the
