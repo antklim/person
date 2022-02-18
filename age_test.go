@@ -41,6 +41,10 @@ func TestAge(t *testing.T) {
 			dob:      now.AddDate(-22, 1, 2),
 			expected: "21 year",
 		},
+		{
+			dob:      now.AddDate(-112, 1, 2),
+			expected: "111 years",
+		},
 	}
 	for _, tC := range testCases {
 		got, err := person.Age(tC.dob, format)

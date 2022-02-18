@@ -96,7 +96,7 @@ func formatDuration(d time.Duration, format string) string {
 // It returns a number and correct form of noun (singular or plural).
 func formatNoun(n int, s string) string {
 	f := "%d %s"
-	if n%10 != 1 || n == 11 {
+	if n%10 != 1 || n%100 == 11 {
 		f += "s"
 	}
 	return fmt.Sprintf(f, n, s)
