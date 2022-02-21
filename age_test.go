@@ -206,33 +206,76 @@ func TestFormatPrint(t *testing.T) {
 	}
 }
 
-// TODO: add month, week, hour formatting
+// TODO: add month, week, and hour parsing
 
-func TestFormatParse(t *testing.T) {
-	// testCases := []struct {
-	// 	format   string
-	// 	expected AgeFormat
-	// }{
-	// 	{
-	// 		format:   "%Y",
-	// 		expected: AgeFormat{year: true, dyear: true},
-	// 	},
-	// 	{
-	// 		format:   "%y",
-	// 		expected: AgeFormat{year: true, dyear: false},
-	// 	},
-	// 	{
-	// 		format:   "%D",
-	// 		expected: AgeFormat{day: true, dday: true},
-	// 	},
-	// 	{
-	// 		format:   "%d",
-	// 		expected: AgeFormat{day: true, dday: false},
-	// 	},
-	// }
-	// for _, tC := range testCases {
-	// 	t.Run(tC.desc, func(t *testing.T) {
+func TestAgeFormatParse(t *testing.T) {
+	testCases := []struct {
+		format   string
+		expected person.AgeFormat
+	}{
+		{
+			format:   "   %Y   ",
+			expected: person.AgeFormat{HasYear: true},
+		},
+		{
+			format:   "   %y   ",
+			expected: person.AgeFormat{HasYear: true, YearValueOnly: true},
+		},
+		{
+			format:   "%y    %Y", // if verb repeated the latest value will be used
+			expected: person.AgeFormat{HasYear: true},
+		},
+		{
+			format:   "   %D   ",
+			expected: person.AgeFormat{HasDay: true},
+		},
+		{
+			format:   "   %d   ",
+			expected: person.AgeFormat{HasDay: true, DayValueOnly: true},
+		},
+		{
+			format:   "%d    %D", // if verb repeated the latest value will be used
+			expected: person.AgeFormat{HasDay: true},
+		},
+		{
+			format:   "%Y    %D",
+			expected: person.AgeFormat{HasYear: true, HasDay: true},
+		},
+		{
+			format:   "  %Y%d  ",
+			expected: person.AgeFormat{HasYear: true, HasDay: true, DayValueOnly: true},
+		},
+		{
+			format:   "  %y%D  ",
+			expected: person.AgeFormat{HasYear: true, YearValueOnly: true, HasDay: true},
+		},
+		{
+			format:   "  %y%d  ",
+			expected: person.AgeFormat{HasYear: true, YearValueOnly: true, HasDay: true, DayValueOnly: true},
+		},
+		{
+			format:   "X",
+			expected: person.AgeFormat{},
+		},
+	}
+	for _, tC := range testCases {
+		got, err := person.UnmarshalAgeFormat(tC.format)
+		if err != nil {
+			t.Errorf("UnmarshalAgeFormat(%s) failed: %v", tC.format, err)
+		} else if got != tC.expected {
+			t.Errorf("UnmarshalAgeFormat(%s) = %v, want %v", tC.format, got, tC.expected)
+		}
+	}
+}
 
-	// 	})
-	// }
+func TestAgeFormatParseFails(t *testing.T) {
+	format := "%X%L %S"
+	expected := errors.New("format %X%L %S has unknown verb X")
+
+	got, err := person.UnmarshalAgeFormat(format)
+	if err == nil {
+		t.Fatalf("UnmarshalAgeFormat(%s) = %v, want to fail due to %v", format, got, expected)
+	} else if err.Error() != expected.Error() {
+		t.Errorf("UnmarshalAgeFormat(%s) failed: %v, want to fail due to %v", format, err, expected)
+	}
 }

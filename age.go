@@ -108,3 +108,44 @@ func formatNoun(n int, s string) string {
 	}
 	return fmt.Sprintf(f, n, s)
 }
+
+type ageFormat struct {
+	HasYear       bool
+	YearValueOnly bool
+	HasDay        bool
+	DayValueOnly  bool
+}
+
+func unmarshalAgeFormat(format string) (ageFormat, error) {
+	result := ageFormat{}
+	end := len(format)
+	for i := 0; i < end; {
+		for i < end && format[i] != '%' {
+			i++
+		}
+		if i >= end {
+			// done processing format string
+			break
+		}
+		// process verb
+		i++
+		switch c := format[i]; c {
+		case 'Y':
+			result.HasYear = true
+			result.YearValueOnly = false
+		case 'y':
+			result.HasYear = true
+			result.YearValueOnly = true
+		case 'D':
+			result.HasDay = true
+			result.DayValueOnly = false
+		case 'd':
+			result.HasDay = true
+			result.DayValueOnly = true
+		default:
+			return ageFormat{}, fmt.Errorf("format %s has unknown verb %c", format, c)
+		}
+	}
+
+	return result, nil
+}
