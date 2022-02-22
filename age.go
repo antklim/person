@@ -118,6 +118,7 @@ func formatNoun(n int, s string) string {
 	return fmt.Sprintf(f, n, s)
 }
 
+// TODO: refactoring. ageFormat can be replaced with the bit's mask
 type ageFormat struct {
 	HasYear        bool
 	YearValueOnly  bool
