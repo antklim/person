@@ -34,7 +34,6 @@ var (
 // 	'M': "month",
 // 	'W': "week",
 // 	'D': "day",
-// 	'H': "hour",
 // }
 
 // Age returns persons age formatted using format. It calculates age based on
@@ -110,10 +109,14 @@ func formatNoun(n int, s string) string {
 }
 
 type ageFormat struct {
-	HasYear       bool
-	YearValueOnly bool
-	HasDay        bool
-	DayValueOnly  bool
+	HasYear        bool
+	YearValueOnly  bool
+	HasMonth       bool
+	MonthValueOnly bool
+	HasWeek        bool
+	WeekValueOnly  bool
+	HasDay         bool
+	DayValueOnly   bool
 }
 
 func unmarshalAgeFormat(format string) (ageFormat, error) {
@@ -136,6 +139,18 @@ func unmarshalAgeFormat(format string) (ageFormat, error) {
 		case 'y':
 			result.HasYear = true
 			result.YearValueOnly = true
+		case 'M':
+			result.HasMonth = true
+			result.MonthValueOnly = false
+		case 'm':
+			result.HasMonth = true
+			result.MonthValueOnly = true
+		case 'W':
+			result.HasWeek = true
+			result.WeekValueOnly = false
+		case 'w':
+			result.HasWeek = true
+			result.WeekValueOnly = true
 		case 'D':
 			result.HasDay = true
 			result.DayValueOnly = false

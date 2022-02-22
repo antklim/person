@@ -155,7 +155,7 @@ func TestAgeOnFails(t *testing.T) {
 }
 
 // TODO: add tests with months and weeks
-// TODO: add tests with %y, %m, %w, %d, %h and custom time units names
+// TODO: add tests with %y, %m, %w, %d and custom time units names
 
 func TestFormatPrint(t *testing.T) {
 	t.Skip()
@@ -206,8 +206,6 @@ func TestFormatPrint(t *testing.T) {
 	}
 }
 
-// TODO: add month, week, and hour parsing
-
 func TestAgeFormatParse(t *testing.T) {
 	testCases := []struct {
 		format   string
@@ -226,6 +224,30 @@ func TestAgeFormatParse(t *testing.T) {
 			expected: person.AgeFormat{HasYear: true},
 		},
 		{
+			format:   "   %M   ",
+			expected: person.AgeFormat{HasMonth: true},
+		},
+		{
+			format:   "   %m   ",
+			expected: person.AgeFormat{HasMonth: true, MonthValueOnly: true},
+		},
+		{
+			format:   "%y    %Y", // if verb repeated the latest value will be used
+			expected: person.AgeFormat{HasYear: true},
+		},
+		{
+			format:   "   %W   ",
+			expected: person.AgeFormat{HasWeek: true},
+		},
+		{
+			format:   "   %w   ",
+			expected: person.AgeFormat{HasWeek: true, WeekValueOnly: true},
+		},
+		{
+			format:   "%y    %Y", // if verb repeated the latest value will be used
+			expected: person.AgeFormat{HasYear: true},
+		},
+		{
 			format:   "   %D   ",
 			expected: person.AgeFormat{HasDay: true},
 		},
@@ -238,16 +260,29 @@ func TestAgeFormatParse(t *testing.T) {
 			expected: person.AgeFormat{HasDay: true},
 		},
 		{
-			format:   "%Y    %D",
-			expected: person.AgeFormat{HasYear: true, HasDay: true},
+			format: "%Y  %m%D",
+			expected: person.AgeFormat{
+				HasYear:  true,
+				HasMonth: true, MonthValueOnly: true,
+				HasDay: true,
+			},
 		},
 		{
-			format:   "  %Y%d  ",
-			expected: person.AgeFormat{HasYear: true, HasDay: true, DayValueOnly: true},
+			format: "  %Y%W%d",
+			expected: person.AgeFormat{
+				HasYear: true,
+				HasWeek: true,
+				HasDay:  true, DayValueOnly: true,
+			},
 		},
 		{
-			format:   "  %y%D  ",
-			expected: person.AgeFormat{HasYear: true, YearValueOnly: true, HasDay: true},
+			format: " %y%M%w %D ",
+			expected: person.AgeFormat{
+				HasYear: true, YearValueOnly: true,
+				HasMonth: true,
+				HasWeek:  true, WeekValueOnly: true,
+				HasDay: true,
+			},
 		},
 		{
 			format:   "  %y%d  ",
