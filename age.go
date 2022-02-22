@@ -6,7 +6,6 @@ import (
 	"time"
 )
 
-// TODO: AgeOn and Age should return error on invalid format
 // TODO: define behavior in case when rawFormat is an empty string. Options are:
 //	- return an error
 //	- return an empty string response and don't calculate age
@@ -16,12 +15,10 @@ import (
 // %M, %m for months
 // %W, %w for weeks
 // %D, %d for days
-// %H, %h for hours
 //
 // %Y, %M, %W, and %D = 5 years, 4 months, 3 weeks, and 2 days
 // %y years and %w weeks = 5 years and 3 weeks
 // Y years and w weeks = Y years and w weeks
-// %Z years = years (unknown verb replaced with '')
 
 const (
 	hoursInDay  = 24
@@ -44,52 +41,54 @@ var (
 // provided date of birth is in the future.
 // For example 31 years, 2 months, 1 week, and 2 days.
 func Age(dob time.Time, rawFormat string) (string, error) {
-	_, err := unmarshalAgeFormat(rawFormat)
+	format, err := unmarshalAgeFormat(rawFormat)
 	if err != nil {
 		return "", err
 	}
 	now := time.Now()
-	return ageOn(dob, now, rawFormat)
+	return ageOn(dob, now, format)
 }
 
 // AgeOn returns persons age on a specific date formatted using format.
 // It returns an error when provided date is before the date of birth (dob).
 // For example 31 years, 2 months, 1 week, and 2 days.
 func AgeOn(dob, date time.Time, rawFormat string) (string, error) {
-	_, err := unmarshalAgeFormat(rawFormat)
+	format, err := unmarshalAgeFormat(rawFormat)
 	if err != nil {
 		return "", err
 	}
-	return ageOn(dob, date, rawFormat)
+	return ageOn(dob, date, format)
 }
 
-// IsAdult returns if a person with provided date of birth is adult.
-// adultAge in years
-func IsAdult(dob time.Time, adultAge int) bool {
-	now := time.Now()
-	return isAdultOn(dob, now, adultAge)
-}
+// // IsAdult returns if a person with provided date of birth is adult.
+// // adultAge in years
+// // WARN: not implemented
+// func IsAdult(dob time.Time, adultAge int) bool {
+// 	now := time.Now()
+// 	return isAdultOn(dob, now, adultAge)
+// }
 
-func IsAdultOn(dob, date time.Time, adultAge int) bool {
-	return isAdultOn(dob, date, adultAge)
-}
+// // WARN: not implemented
+// func IsAdultOn(dob, date time.Time, adultAge int) bool {
+// 	return isAdultOn(dob, date, adultAge)
+// }
 
-func ageOn(dob, date time.Time, format string) (string, error) {
+func ageOn(dob, date time.Time, f ageFormat) (string, error) {
 	if dob.After(date) {
 		return "", errDobIsInTheFuture
 	}
 
 	d := date.Sub(dob)
-	age := formatDuration(d, format)
+	age := formatDuration(d, f)
 
 	return age, nil
 }
 
-func isAdultOn(dob, date time.Time, adultAge int) bool {
-	return false
-}
+// func isAdultOn(dob, date time.Time, adultAge int) bool {
+// 	panic("not implemented")
+// }
 
-func formatDuration(d time.Duration, format string) string {
+func formatDuration(d time.Duration, f ageFormat) string {
 	// this function is responsible for printing the result
 	// result calculation should be done in another function - such as parse duration
 
@@ -97,11 +96,11 @@ func formatDuration(d time.Duration, format string) string {
 	// for example, when format %Y %M %D - it outputs full years, months and days
 	// but when format is just %D - it outputs age in days (3653 days - 10 years and 3 days)
 
-	switch format {
-	case "%D":
+	switch {
+	case f.HasDay:
 		days := int(d.Hours() / hoursInDay)
 		return formatNoun(days, "day")
-	case "%Y":
+	case f.HasYear:
 		years := int(d.Hours() / hoursInYear)
 		return formatNoun(years, "year")
 	default:
