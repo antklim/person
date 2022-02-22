@@ -1,7 +1,6 @@
 package person_test
 
 import (
-	"errors"
 	"testing"
 	"time"
 
@@ -60,22 +59,37 @@ func TestAge(t *testing.T) {
 }
 
 func TestAgeFails(t *testing.T) {
-	format := "%D"
-	dob := time.Now().Add(time.Second)
-	expected := errors.New("date of birth is in the future")
+	testCases := []struct {
+		dob    time.Time
+		format string
+		err    string
+	}{
+		{
+			dob:    time.Now().Add(time.Second),
+			format: "%D",
+			err:    "date of birth is in the future",
+		},
+		{
+			dob:    time.Now().AddDate(-2, 1, 0),
+			format: " %Z m",
+			err:    `format " %Z m" has unknown verb Z`,
+		},
+	}
 
-	got, err := person.Age(dob, format)
-	if err == nil {
-		t.Fatalf("Age(%s, %s) = %s, want to fail due to %v", dob.Format(dateFmt),
-			format, got, expected)
-	} else {
-		if err.Error() != expected.Error() {
-			t.Errorf("Age(%s, %s) failed: %v, want to fail due to %v",
-				dob.Format(dateFmt), format, err, expected)
-		}
-		if got != "" {
-			t.Errorf("Age(%s, %s) = %s, want formatted date to be an empty string",
-				dob.Format(dateFmt), format, got)
+	for _, tC := range testCases {
+		got, err := person.Age(tC.dob, tC.format)
+		if err == nil {
+			t.Fatalf("Age(%s, %s) = %s, want to fail due to %s", tC.dob.Format(dateFmt),
+				tC.format, got, tC.err)
+		} else {
+			if err.Error() != tC.err {
+				t.Errorf("Age(%s, %s) failed: %v, want to fail due to %s",
+					tC.dob.Format(dateFmt), tC.format, err, tC.err)
+			}
+			if got != "" {
+				t.Errorf("Age(%s, %s) = %s, want formatted date to be an empty string",
+					tC.dob.Format(dateFmt), tC.format, got)
+			}
 		}
 	}
 }
@@ -133,29 +147,45 @@ func TestAgeOn(t *testing.T) {
 }
 
 func TestAgeOnFails(t *testing.T) {
-	format := "%D"
 	dob := time.Date(1991, time.April, 1, 13, 17, 0, 0, time.UTC)
-	date := dob.Add(-time.Second)
-	expected := errors.New("date of birth is in the future")
 
-	got, err := person.AgeOn(dob, date, format)
-	if err == nil {
-		t.Fatalf("AgeOn(%s, %s, %s) = %s, want to fail due to %v", dob.Format(dateFmt),
-			date.Format(dateFmt), format, got, expected)
-	} else {
-		if err.Error() != expected.Error() {
-			t.Errorf("AgeOn(%s, %s, %s) failed: %v, want to fail due to %v",
-				dob.Format(dateFmt), date.Format(dateFmt), format, err, expected)
-		}
-		if got != "" {
-			t.Errorf("AgeOn(%s, %s, %s) = %s, want formatted date to be an empty string",
-				dob.Format(dateFmt), date.Format(dateFmt), format, got)
+	testCases := []struct {
+		date   time.Time
+		format string
+		err    string
+	}{
+		{
+			date:   dob.Add(-time.Second),
+			format: "%D",
+			err:    "date of birth is in the future",
+		},
+		{
+			date:   dob.AddDate(1, 1, 1),
+			format: " %G %f_+",
+			err:    `format " %G %f_+" has unknown verb G`,
+		},
+	}
+
+	for _, tC := range testCases {
+		got, err := person.AgeOn(dob, tC.date, tC.format)
+		if err == nil {
+			t.Fatalf("AgeOn(%s, %s, %s) = %s, want to fail due to %s", dob.Format(dateFmt),
+				tC.date.Format(dateFmt), tC.format, got, tC.err)
+		} else {
+			if err.Error() != tC.err {
+				t.Errorf("AgeOn(%s, %s, %s) failed: %v, want to fail due to %s",
+					dob.Format(dateFmt), tC.date.Format(dateFmt), tC.format, err, tC.err)
+			}
+			if got != "" {
+				t.Errorf("AgeOn(%s, %s, %s) = %s, want formatted date to be an empty string",
+					dob.Format(dateFmt), tC.date.Format(dateFmt), tC.format, got)
+			}
 		}
 	}
 }
 
 // TODO: add tests with months and weeks
-// TODO: add tests with %y, %m, %w, %d, %h and custom time units names
+// TODO: add tests with %y, %m, %w, %d and custom time units names
 
 func TestFormatPrint(t *testing.T) {
 	t.Skip()
@@ -206,33 +236,111 @@ func TestFormatPrint(t *testing.T) {
 	}
 }
 
-// TODO: add month, week, hour formatting
+func TestAgeFormatParse(t *testing.T) {
+	testCases := []struct {
+		format   string
+		expected person.AgeFormat
+	}{
+		{
+			format:   "   %Y   ",
+			expected: person.AgeFormat{HasYear: true},
+		},
+		{
+			format:   "   %y   ",
+			expected: person.AgeFormat{HasYear: true, YearValueOnly: true},
+		},
+		{
+			format:   "%y    %Y", // if verb repeated the latest value will be used
+			expected: person.AgeFormat{HasYear: true},
+		},
+		{
+			format:   "   %M   ",
+			expected: person.AgeFormat{HasMonth: true},
+		},
+		{
+			format:   "   %m   ",
+			expected: person.AgeFormat{HasMonth: true, MonthValueOnly: true},
+		},
+		{
+			format:   "%y    %Y", // if verb repeated the latest value will be used
+			expected: person.AgeFormat{HasYear: true},
+		},
+		{
+			format:   "   %W   ",
+			expected: person.AgeFormat{HasWeek: true},
+		},
+		{
+			format:   "   %w   ",
+			expected: person.AgeFormat{HasWeek: true, WeekValueOnly: true},
+		},
+		{
+			format:   "%y    %Y", // if verb repeated the latest value will be used
+			expected: person.AgeFormat{HasYear: true},
+		},
+		{
+			format:   "   %D   ",
+			expected: person.AgeFormat{HasDay: true},
+		},
+		{
+			format:   "   %d   ",
+			expected: person.AgeFormat{HasDay: true, DayValueOnly: true},
+		},
+		{
+			format:   "%d    %D", // if verb repeated the latest value will be used
+			expected: person.AgeFormat{HasDay: true},
+		},
+		{
+			format: "%Y  %m%D",
+			expected: person.AgeFormat{
+				HasYear:  true,
+				HasMonth: true, MonthValueOnly: true,
+				HasDay: true,
+			},
+		},
+		{
+			format: "  %Y%W%d",
+			expected: person.AgeFormat{
+				HasYear: true,
+				HasWeek: true,
+				HasDay:  true, DayValueOnly: true,
+			},
+		},
+		{
+			format: " %y%M%w %D ",
+			expected: person.AgeFormat{
+				HasYear: true, YearValueOnly: true,
+				HasMonth: true,
+				HasWeek:  true, WeekValueOnly: true,
+				HasDay: true,
+			},
+		},
+		{
+			format:   "  %y%d  ",
+			expected: person.AgeFormat{HasYear: true, YearValueOnly: true, HasDay: true, DayValueOnly: true},
+		},
+		{
+			format:   "X",
+			expected: person.AgeFormat{},
+		},
+	}
+	for _, tC := range testCases {
+		got, err := person.UnmarshalAgeFormat(tC.format)
+		if err != nil {
+			t.Errorf("UnmarshalAgeFormat(%s) failed: %v", tC.format, err)
+		} else if got != tC.expected {
+			t.Errorf("UnmarshalAgeFormat(%s) = %v, want %v", tC.format, got, tC.expected)
+		}
+	}
+}
 
-func TestFormatParse(t *testing.T) {
-	// testCases := []struct {
-	// 	format   string
-	// 	expected AgeFormat
-	// }{
-	// 	{
-	// 		format:   "%Y",
-	// 		expected: AgeFormat{year: true, dyear: true},
-	// 	},
-	// 	{
-	// 		format:   "%y",
-	// 		expected: AgeFormat{year: true, dyear: false},
-	// 	},
-	// 	{
-	// 		format:   "%D",
-	// 		expected: AgeFormat{day: true, dday: true},
-	// 	},
-	// 	{
-	// 		format:   "%d",
-	// 		expected: AgeFormat{day: true, dday: false},
-	// 	},
-	// }
-	// for _, tC := range testCases {
-	// 	t.Run(tC.desc, func(t *testing.T) {
+func TestAgeFormatParseFails(t *testing.T) {
+	format := "%X%L %S"
+	expected := `format "%X%L %S" has unknown verb X`
 
-	// 	})
-	// }
+	got, err := person.UnmarshalAgeFormat(format)
+	if err == nil {
+		t.Fatalf("UnmarshalAgeFormat(%s) = %v, want to fail due to %s", format, got, expected)
+	} else if err.Error() != expected {
+		t.Errorf("UnmarshalAgeFormat(%s) failed: %v, want to fail due to %s", format, err, expected)
+	}
 }
