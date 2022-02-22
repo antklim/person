@@ -60,22 +60,37 @@ func TestAge(t *testing.T) {
 }
 
 func TestAgeFails(t *testing.T) {
-	format := "%D"
-	dob := time.Now().Add(time.Second)
-	expected := errors.New("date of birth is in the future")
+	testCases := []struct {
+		dob    time.Time
+		format string
+		err    string
+	}{
+		{
+			dob:    time.Now().Add(time.Second),
+			format: "%D",
+			err:    "date of birth is in the future",
+		},
+		{
+			dob:    time.Now().AddDate(-2, 1, 0),
+			format: " %Z m",
+			err:    `format " %Z m" has unknown verb Z`,
+		},
+	}
 
-	got, err := person.Age(dob, format)
-	if err == nil {
-		t.Fatalf("Age(%s, %s) = %s, want to fail due to %v", dob.Format(dateFmt),
-			format, got, expected)
-	} else {
-		if err.Error() != expected.Error() {
-			t.Errorf("Age(%s, %s) failed: %v, want to fail due to %v",
-				dob.Format(dateFmt), format, err, expected)
-		}
-		if got != "" {
-			t.Errorf("Age(%s, %s) = %s, want formatted date to be an empty string",
-				dob.Format(dateFmt), format, got)
+	for _, tC := range testCases {
+		got, err := person.Age(tC.dob, tC.format)
+		if err == nil {
+			t.Fatalf("Age(%s, %s) = %s, want to fail due to %s", tC.dob.Format(dateFmt),
+				tC.format, got, tC.err)
+		} else {
+			if err.Error() != tC.err {
+				t.Errorf("Age(%s, %s) failed: %v, want to fail due to %s",
+					tC.dob.Format(dateFmt), tC.format, err, tC.err)
+			}
+			if got != "" {
+				t.Errorf("Age(%s, %s) = %s, want formatted date to be an empty string",
+					tC.dob.Format(dateFmt), tC.format, got)
+			}
 		}
 	}
 }
@@ -305,12 +320,12 @@ func TestAgeFormatParse(t *testing.T) {
 
 func TestAgeFormatParseFails(t *testing.T) {
 	format := "%X%L %S"
-	expected := errors.New("format %X%L %S has unknown verb X")
+	expected := `format "%X%L %S" has unknown verb X`
 
 	got, err := person.UnmarshalAgeFormat(format)
 	if err == nil {
-		t.Fatalf("UnmarshalAgeFormat(%s) = %v, want to fail due to %v", format, got, expected)
-	} else if err.Error() != expected.Error() {
-		t.Errorf("UnmarshalAgeFormat(%s) failed: %v, want to fail due to %v", format, err, expected)
+		t.Fatalf("UnmarshalAgeFormat(%s) = %v, want to fail due to %s", format, got, expected)
+	} else if err.Error() != expected {
+		t.Errorf("UnmarshalAgeFormat(%s) failed: %v, want to fail due to %s", format, err, expected)
 	}
 }

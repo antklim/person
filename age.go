@@ -6,8 +6,11 @@ import (
 	"time"
 )
 
-// TODO: define format
 // TODO: AgeOn and Age should return error on invalid format
+// TODO: define behavior in case when rawFormat is an empty string. Options are:
+//	- return an error
+//	- return an empty string response and don't calculate age
+//	- declare define format and return age accordingly
 
 // %Y, %y for years
 // %M, %m for months
@@ -40,16 +43,20 @@ var (
 // provided date of birth (dob) and current date. It returns an error when the
 // provided date of birth is in the future.
 // For example 31 years, 2 months, 1 week, and 2 days.
-func Age(dob time.Time, format string) (string, error) {
+func Age(dob time.Time, rawFormat string) (string, error) {
 	now := time.Now()
-	return ageOn(dob, now, format)
+	_, err := unmarshalAgeFormat(rawFormat)
+	if err != nil {
+		return "", err
+	}
+	return ageOn(dob, now, rawFormat)
 }
 
 // AgeOn returns persons age on a specific date formatted using format.
 // It returns an error when provided date is before the date of birth (dob).
 // For example 31 years, 2 months, 1 week, and 2 days.
-func AgeOn(dob, date time.Time, format string) (string, error) {
-	return ageOn(dob, date, format)
+func AgeOn(dob, date time.Time, rawFormat string) (string, error) {
+	return ageOn(dob, date, rawFormat)
 }
 
 // IsAdult returns if a person with provided date of birth is adult.
@@ -158,7 +165,7 @@ func unmarshalAgeFormat(format string) (ageFormat, error) {
 			result.HasDay = true
 			result.DayValueOnly = true
 		default:
-			return ageFormat{}, fmt.Errorf("format %s has unknown verb %c", format, c)
+			return ageFormat{}, fmt.Errorf("format %q has unknown verb %c", format, c)
 		}
 	}
 
