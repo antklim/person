@@ -118,6 +118,8 @@ func TestUnmarshalFails(t *testing.T) {
 	}
 }
 
+// TODO: move test data to CSV
+
 func TestNewDiff(t *testing.T) { // nolint:funlen
 	// years months
 	// years weeks

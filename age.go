@@ -4,6 +4,8 @@ import (
 	"errors"
 	"fmt"
 	"time"
+
+	"github.com/antklim/person/datediff"
 )
 
 // TODO: define behavior in case when rawFormat is an empty string. Options are:
@@ -41,7 +43,7 @@ var (
 // provided date of birth is in the future.
 // For example 31 years, 2 months, 1 week, and 2 days.
 func Age(dob time.Time, rawFormat string) (string, error) {
-	format, err := unmarshalDateDiffFormat(rawFormat)
+	format, err := datediff.Unmarshal(rawFormat)
 	if err != nil {
 		return "", err
 	}
@@ -53,7 +55,7 @@ func Age(dob time.Time, rawFormat string) (string, error) {
 // It returns an error when provided date is before the date of birth (dob).
 // For example 31 years, 2 months, 1 week, and 2 days.
 func AgeOn(dob, date time.Time, rawFormat string) (string, error) {
-	format, err := unmarshalDateDiffFormat(rawFormat)
+	format, err := datediff.Unmarshal(rawFormat)
 	if err != nil {
 		return "", err
 	}
@@ -73,12 +75,12 @@ func AgeOn(dob, date time.Time, rawFormat string) (string, error) {
 // 	return isAdultOn(dob, date, adultAge)
 // }
 
-func ageOn(dob, date time.Time, format dateDiffFormat) (string, error) {
+func ageOn(dob, date time.Time, format datediff.Format) (string, error) {
 	if dob.After(date) {
 		return "", errDobIsInTheFuture
 	}
 
-	d := calculateDateDiff(dob, date, format)
+	d := datediff.NewDiff(dob, date, format)
 	age := d.Format(format)
 
 	return age, nil
