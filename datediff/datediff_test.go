@@ -106,6 +106,18 @@ func TestUnmarshal(t *testing.T) {
 	}
 }
 
+func TestUnmarshalFails(t *testing.T) {
+	format := "%X%L %S"
+	expected := `format "%X%L %S" has unknown verb X`
+
+	got, err := datediff.Unmarshal(format)
+	if err == nil {
+		t.Fatalf("Unmarshal(%s) = %v, want to fail due to %s", format, got, expected)
+	} else if err.Error() != expected {
+		t.Errorf("Unmarshal(%s) failed: %v, want to fail due to %s", format, err, expected)
+	}
+}
+
 func TestNewDiff(t *testing.T) { // nolint:funlen
 	// years months
 	// years weeks
