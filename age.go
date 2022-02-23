@@ -23,8 +23,6 @@ import (
 const (
 	monthsInYear = 12
 	daysInWeek   = 7
-	hoursInDay   = 24
-	hoursInYear  = 365 * hoursInDay
 )
 
 var (
@@ -80,8 +78,8 @@ func ageOn(dob, date time.Time, f ageFormat) (string, error) {
 		return "", errDobIsInTheFuture
 	}
 
-	d := date.Sub(dob)
-	age := formatDuration(d, f)
+	d := calculateDateDiff(dob, date, f)
+	age := formatDateDiff(d, f)
 
 	return age, nil
 }
@@ -90,21 +88,12 @@ func ageOn(dob, date time.Time, f ageFormat) (string, error) {
 // 	panic("not implemented")
 // }
 
-func formatDuration(d time.Duration, f ageFormat) string {
-	// this function is responsible for printing the result
-	// result calculation should be done in another function - such as parse duration
-
-	// it should know the state of output
-	// for example, when format %Y %M %D - it outputs full years, months and days
-	// but when format is just %D - it outputs age in days (3653 days - 10 years and 3 days)
-
+func formatDateDiff(d dateDiff, f ageFormat) string {
 	switch {
 	case f.HasDay:
-		days := int(d.Hours() / hoursInDay)
-		return formatNoun(days, "day")
+		return formatNoun(d.Days, "day")
 	case f.HasYear:
-		years := int(d.Hours() / hoursInYear)
-		return formatNoun(years, "year")
+		return formatNoun(d.Years, "year")
 	default:
 		return ""
 	}
