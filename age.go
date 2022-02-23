@@ -21,8 +21,10 @@ import (
 // Y years and w weeks = Y years and w weeks
 
 const (
-	hoursInDay  = 24
-	hoursInYear = 365 * hoursInDay
+	monthsInYear = 12
+	daysInWeek   = 7
+	hoursInDay   = 24
+	hoursInYear  = 365 * hoursInDay
 )
 
 var (
@@ -174,4 +176,77 @@ func unmarshalAgeFormat(format string) (ageFormat, error) {
 	}
 
 	return result, nil
+}
+
+type dateDiff struct {
+	Years  int
+	Months int
+	Weeks  int
+	Days   int
+}
+
+func calculateDateDiff(start, end time.Time, f ageFormat) dateDiff {
+	diff := dateDiff{}
+
+	if f.HasYear {
+		diff.Years = fullYearsDiff(start, end)
+		start = start.AddDate(diff.Years, 0, 0)
+	}
+
+	if f.HasMonth {
+		// getting to the closest year to the end date to reduce
+		// amount of the interations during the full month calculation
+		var years int
+		if !f.HasYear {
+			years = fullYearsDiff(start, end)
+		}
+		months := fullMonthsDiff(start.AddDate(years, 0, 0), end)
+		diff.Months = years*monthsInYear + months
+		start = start.AddDate(0, diff.Months, 0)
+	}
+
+	if f.HasWeek {
+		diff.Weeks = fullWeeksDiff(start, end)
+		start = start.AddDate(0, 0, diff.Weeks*daysInWeek)
+	}
+
+	if f.HasDay {
+		diff.Days = fullDaysDiff(start, end)
+	}
+
+	return diff
+}
+
+func fullYearsDiff(start, end time.Time) (years int) {
+	years = end.Year() - start.Year()
+	if start.AddDate(years, 0, 0).After(end) {
+		years--
+	}
+	return
+}
+
+func fullMonthsDiff(start, end time.Time) (months int) {
+	for start.AddDate(0, months+1, 0).Before(end) ||
+		start.AddDate(0, months+1, 0).Equal(end) {
+		months++
+	}
+	return
+}
+
+func fullWeeksDiff(start, end time.Time) (weeks int) {
+	days := daysInWeek
+	for start.AddDate(0, 0, days).Before(end) ||
+		start.AddDate(0, 0, days).Equal(end) {
+		weeks++
+		days += daysInWeek
+	}
+	return
+}
+
+func fullDaysDiff(start, end time.Time) (days int) {
+	for start.AddDate(0, 0, days+1).Before(end) ||
+		start.AddDate(0, 0, days+1).Equal(end) {
+		days++
+	}
+	return
 }

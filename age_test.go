@@ -7,6 +7,9 @@ import (
 	"github.com/antklim/person"
 )
 
+// TODO: move test data to CSV (especially TestCalculateDateDiff data)
+// TODO: use CSV test data in all tests that calculate and output age
+
 const dateFmt = "2006-01-02"
 
 func TestAge(t *testing.T) {
@@ -101,7 +104,6 @@ func TestAgeOn(t *testing.T) {
 		format   string
 		expected string
 	}{
-		// TODO: add leap year test
 		{
 			date:     time.Date(1991, time.April, 3, 13, 17, 0, 0, time.UTC),
 			format:   "%D",
@@ -184,7 +186,6 @@ func TestAgeOnFails(t *testing.T) {
 	}
 }
 
-// TODO: add tests with months and weeks
 // TODO: add tests with %y, %m, %w, %d and custom time units names
 
 func TestFormatPrint(t *testing.T) {
@@ -342,5 +343,233 @@ func TestAgeFormatParseFails(t *testing.T) {
 		t.Fatalf("UnmarshalAgeFormat(%s) = %v, want to fail due to %s", format, got, expected)
 	} else if err.Error() != expected {
 		t.Errorf("UnmarshalAgeFormat(%s) failed: %v, want to fail due to %s", format, err, expected)
+	}
+}
+
+// nolint:funlen
+func TestCalculateDateDiff(t *testing.T) {
+	// years months
+	// years weeks
+	// years days
+	// months weeks
+	// months days
+	// weeks days
+	// years months weeks
+	// years months days
+	// years weeks days
+	// months weeks days
+	// years months weeks days
+
+	baseDate := time.Date(2000, time.April, 17, 0, 0, 0, 0, time.UTC)
+	testCases := []struct {
+		start    time.Time
+		end      time.Time
+		format   person.AgeFormat
+		expected person.DateDiff
+	}{
+		// 2000-04-17 - 2003-03-16
+		// SINGLE UNITS
+		{
+			start:    baseDate,
+			end:      baseDate.AddDate(3, -1, -1),
+			format:   person.AgeFormat{HasYear: true},
+			expected: person.DateDiff{Years: 2},
+		},
+		{
+			start:    baseDate,
+			end:      baseDate.AddDate(3, -1, -1),
+			format:   person.AgeFormat{HasMonth: true},
+			expected: person.DateDiff{Months: 34},
+		},
+		{
+			start:    baseDate,
+			end:      baseDate.AddDate(3, -1, -1),
+			format:   person.AgeFormat{HasWeek: true},
+			expected: person.DateDiff{Weeks: 151},
+		},
+		{
+			start:    baseDate,
+			end:      baseDate.AddDate(3, -1, -1),
+			format:   person.AgeFormat{HasDay: true},
+			expected: person.DateDiff{Days: 1063},
+		},
+
+		// UNITS DOUBLES
+		{
+			start:    baseDate,
+			end:      baseDate.AddDate(3, -1, -1),
+			format:   person.AgeFormat{HasYear: true, HasMonth: true},
+			expected: person.DateDiff{Years: 2, Months: 10},
+		},
+		{
+			start:    baseDate,
+			end:      baseDate.AddDate(3, -1, -1),
+			format:   person.AgeFormat{HasYear: true, HasWeek: true},
+			expected: person.DateDiff{Years: 2, Weeks: 47},
+		},
+		{
+			start:    baseDate,
+			end:      baseDate.AddDate(3, -1, -1),
+			format:   person.AgeFormat{HasYear: true, HasDay: true},
+			expected: person.DateDiff{Years: 2, Days: 333},
+		},
+		{
+			start:    baseDate,
+			end:      baseDate.AddDate(3, -1, -1),
+			format:   person.AgeFormat{HasMonth: true, HasWeek: true},
+			expected: person.DateDiff{Months: 34, Weeks: 3},
+		},
+		{
+			start:    baseDate,
+			end:      baseDate.AddDate(3, -1, -1),
+			format:   person.AgeFormat{HasMonth: true, HasDay: true},
+			expected: person.DateDiff{Months: 34, Days: 27},
+		},
+		{
+			start:    baseDate,
+			end:      baseDate.AddDate(3, -1, -1),
+			format:   person.AgeFormat{HasWeek: true, HasDay: true},
+			expected: person.DateDiff{Weeks: 151, Days: 6},
+		},
+
+		// UNIT TRIPLETS
+		{
+			start:    baseDate,
+			end:      baseDate.AddDate(3, -1, -1),
+			format:   person.AgeFormat{HasYear: true, HasMonth: true, HasWeek: true},
+			expected: person.DateDiff{Years: 2, Months: 10, Weeks: 3},
+		},
+		{
+			start:    baseDate,
+			end:      baseDate.AddDate(3, -1, -1),
+			format:   person.AgeFormat{HasYear: true, HasMonth: true, HasDay: true},
+			expected: person.DateDiff{Years: 2, Months: 10, Days: 27},
+		},
+		{
+			start:    baseDate,
+			end:      baseDate.AddDate(3, -1, -1),
+			format:   person.AgeFormat{HasYear: true, HasWeek: true, HasDay: true},
+			expected: person.DateDiff{Years: 2, Weeks: 47, Days: 4},
+		},
+		{
+			start:    baseDate,
+			end:      baseDate.AddDate(3, -1, -1),
+			format:   person.AgeFormat{HasMonth: true, HasWeek: true, HasDay: true},
+			expected: person.DateDiff{Months: 34, Weeks: 3, Days: 6},
+		},
+
+		// UNIT QUARTERS
+		{
+			start:    baseDate,
+			end:      baseDate.AddDate(3, -1, -1),
+			format:   person.AgeFormat{HasYear: true, HasMonth: true, HasWeek: true, HasDay: true},
+			expected: person.DateDiff{Years: 2, Months: 10, Weeks: 3, Days: 6},
+		},
+
+		// 2000-04-17, 2003-04-17
+		// SINGLE UNIT
+		{
+			start:    baseDate,
+			end:      baseDate.AddDate(3, 0, 0),
+			format:   person.AgeFormat{HasYear: true},
+			expected: person.DateDiff{Years: 3},
+		},
+		{
+			start:    baseDate,
+			end:      baseDate.AddDate(3, 0, 0),
+			format:   person.AgeFormat{HasMonth: true},
+			expected: person.DateDiff{Months: 36},
+		},
+		{
+			start:    baseDate,
+			end:      baseDate.AddDate(3, 0, 0),
+			format:   person.AgeFormat{HasWeek: true},
+			expected: person.DateDiff{Weeks: 156},
+		},
+		{
+			start:    baseDate,
+			end:      baseDate.AddDate(3, 0, 0),
+			format:   person.AgeFormat{HasDay: true},
+			expected: person.DateDiff{Days: 1095},
+		},
+
+		// UNITS DOUBLES
+		{
+			start:    baseDate,
+			end:      baseDate.AddDate(3, 0, 0),
+			format:   person.AgeFormat{HasYear: true, HasMonth: true},
+			expected: person.DateDiff{Years: 3},
+		},
+		{
+			start:    baseDate,
+			end:      baseDate.AddDate(3, 0, 0),
+			format:   person.AgeFormat{HasYear: true, HasWeek: true},
+			expected: person.DateDiff{Years: 3},
+		},
+		{
+			start:    baseDate,
+			end:      baseDate.AddDate(3, 0, 0),
+			format:   person.AgeFormat{HasYear: true, HasDay: true},
+			expected: person.DateDiff{Years: 3},
+		},
+		{
+			start:    baseDate,
+			end:      baseDate.AddDate(3, 0, 0),
+			format:   person.AgeFormat{HasMonth: true, HasWeek: true},
+			expected: person.DateDiff{Months: 36},
+		},
+		{
+			start:    baseDate,
+			end:      baseDate.AddDate(3, 0, 0),
+			format:   person.AgeFormat{HasMonth: true, HasDay: true},
+			expected: person.DateDiff{Months: 36},
+		},
+		{
+			start:    baseDate,
+			end:      baseDate.AddDate(3, 0, 0),
+			format:   person.AgeFormat{HasWeek: true, HasDay: true},
+			expected: person.DateDiff{Weeks: 156, Days: 3},
+		},
+
+		// UNIT TRIPLETS
+		{
+			start:    baseDate,
+			end:      baseDate.AddDate(3, 0, 0),
+			format:   person.AgeFormat{HasYear: true, HasMonth: true, HasWeek: true},
+			expected: person.DateDiff{Years: 3},
+		},
+		{
+			start:    baseDate,
+			end:      baseDate.AddDate(3, 0, 0),
+			format:   person.AgeFormat{HasYear: true, HasMonth: true, HasDay: true},
+			expected: person.DateDiff{Years: 3},
+		},
+		{
+			start:    baseDate,
+			end:      baseDate.AddDate(3, 0, 0),
+			format:   person.AgeFormat{HasYear: true, HasWeek: true, HasDay: true},
+			expected: person.DateDiff{Years: 3},
+		},
+		{
+			start:    baseDate,
+			end:      baseDate.AddDate(3, 0, 0),
+			format:   person.AgeFormat{HasMonth: true, HasWeek: true, HasDay: true},
+			expected: person.DateDiff{Months: 36},
+		},
+
+		// UNIT QUARTERS
+		{
+			start:    baseDate,
+			end:      baseDate.AddDate(3, 0, 0),
+			format:   person.AgeFormat{HasYear: true, HasMonth: true, HasWeek: true, HasDay: true},
+			expected: person.DateDiff{Years: 3},
+		},
+	}
+	for _, tC := range testCases {
+		got := person.CalculateDateDiff(tC.start, tC.end, tC.format)
+		if got != tC.expected {
+			t.Errorf("CalculateDateDiff(%s, %s, %v) = %v, want %v",
+				tC.start.Format(dateFmt), tC.end.Format(dateFmt), tC.format, got, tC.expected)
+		}
 	}
 }
