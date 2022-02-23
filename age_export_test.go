@@ -1,7 +1,7 @@
 package person
 
-type AgeFormat = ageFormat
+type DateDiffFormat = dateDiffFormat
 type DateDiff = dateDiff
 
-var UnmarshalAgeFormat = unmarshalAgeFormat
+var UnmarshalDateDiffFormat = unmarshalDateDiffFormat
 var CalculateDateDiff = calculateDateDiff

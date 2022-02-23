@@ -41,7 +41,7 @@ var (
 // provided date of birth is in the future.
 // For example 31 years, 2 months, 1 week, and 2 days.
 func Age(dob time.Time, rawFormat string) (string, error) {
-	format, err := unmarshalAgeFormat(rawFormat)
+	format, err := unmarshalDateDiffFormat(rawFormat)
 	if err != nil {
 		return "", err
 	}
@@ -53,7 +53,7 @@ func Age(dob time.Time, rawFormat string) (string, error) {
 // It returns an error when provided date is before the date of birth (dob).
 // For example 31 years, 2 months, 1 week, and 2 days.
 func AgeOn(dob, date time.Time, rawFormat string) (string, error) {
-	format, err := unmarshalAgeFormat(rawFormat)
+	format, err := unmarshalDateDiffFormat(rawFormat)
 	if err != nil {
 		return "", err
 	}
@@ -73,13 +73,13 @@ func AgeOn(dob, date time.Time, rawFormat string) (string, error) {
 // 	return isAdultOn(dob, date, adultAge)
 // }
 
-func ageOn(dob, date time.Time, f ageFormat) (string, error) {
+func ageOn(dob, date time.Time, format dateDiffFormat) (string, error) {
 	if dob.After(date) {
 		return "", errDobIsInTheFuture
 	}
 
-	d := calculateDateDiff(dob, date, f)
-	age := d.Format(f)
+	d := calculateDateDiff(dob, date, format)
+	age := d.Format(format)
 
 	return age, nil
 }
@@ -88,18 +88,8 @@ func ageOn(dob, date time.Time, f ageFormat) (string, error) {
 // 	panic("not implemented")
 // }
 
-// formatNoun takes a number n and noun s in singular form.
-// It returns a number and correct form of noun (singular or plural).
-func formatNoun(n int, s string) string {
-	f := "%d %s"
-	if n%10 != 1 || n%100 == 11 {
-		f += "s"
-	}
-	return fmt.Sprintf(f, n, s)
-}
-
-// TODO: refactoring. ageFormat can be replaced with the bit's mask
-type ageFormat struct {
+// TODO: refactoring. dateDiffFormat can be replaced with the bit's mask
+type dateDiffFormat struct {
 	HasYear        bool
 	YearValueOnly  bool
 	HasMonth       bool
@@ -110,11 +100,11 @@ type ageFormat struct {
 	DayValueOnly   bool
 }
 
-func unmarshalAgeFormat(format string) (ageFormat, error) {
-	result := ageFormat{}
-	end := len(format)
+func unmarshalDateDiffFormat(rawFormat string) (dateDiffFormat, error) {
+	result := dateDiffFormat{}
+	end := len(rawFormat)
 	for i := 0; i < end; {
-		for i < end && format[i] != '%' {
+		for i < end && rawFormat[i] != '%' {
 			i++
 		}
 		if i >= end {
@@ -123,7 +113,7 @@ func unmarshalAgeFormat(format string) (ageFormat, error) {
 		}
 		// process verb
 		i++
-		switch c := format[i]; c {
+		switch c := rawFormat[i]; c {
 		case 'Y':
 			result.HasYear = true
 			result.YearValueOnly = false
@@ -149,7 +139,7 @@ func unmarshalAgeFormat(format string) (ageFormat, error) {
 			result.HasDay = true
 			result.DayValueOnly = true
 		default:
-			return ageFormat{}, fmt.Errorf("format %q has unknown verb %c", format, c)
+			return dateDiffFormat{}, fmt.Errorf("format %q has unknown verb %c", rawFormat, c)
 		}
 	}
 
@@ -165,7 +155,7 @@ type dateDiff struct {
 }
 
 // TODO: add months, weeks output
-func (d dateDiff) Format(f ageFormat) string {
+func (d dateDiff) Format(f dateDiffFormat) string {
 	switch {
 	case f.HasDay:
 		return formatNoun(d.Days, "day")
@@ -176,7 +166,7 @@ func (d dateDiff) Format(f ageFormat) string {
 	}
 }
 
-func calculateDateDiff(start, end time.Time, f ageFormat) dateDiff {
+func calculateDateDiff(start, end time.Time, f dateDiffFormat) dateDiff {
 	diff := dateDiff{}
 
 	if f.HasYear {
@@ -240,4 +230,14 @@ func fullDaysDiff(start, end time.Time) (days int) {
 		days++
 	}
 	return
+}
+
+// formatNoun takes a number n and noun s in singular form.
+// It returns a number and correct form of noun (singular or plural).
+func formatNoun(n int, s string) string {
+	f := "%d %s"
+	if n%10 != 1 || n%100 == 11 {
+		f += "s"
+	}
+	return fmt.Sprintf(f, n, s)
 }

@@ -240,59 +240,59 @@ func TestFormatPrint(t *testing.T) {
 func TestAgeFormatParse(t *testing.T) {
 	testCases := []struct {
 		format   string
-		expected person.AgeFormat
+		expected person.DateDiffFormat
 	}{
 		{
 			format:   "   %Y   ",
-			expected: person.AgeFormat{HasYear: true},
+			expected: person.DateDiffFormat{HasYear: true},
 		},
 		{
 			format:   "   %y   ",
-			expected: person.AgeFormat{HasYear: true, YearValueOnly: true},
+			expected: person.DateDiffFormat{HasYear: true, YearValueOnly: true},
 		},
 		{
 			format:   "%y    %Y", // if verb repeated the latest value will be used
-			expected: person.AgeFormat{HasYear: true},
+			expected: person.DateDiffFormat{HasYear: true},
 		},
 		{
 			format:   "   %M   ",
-			expected: person.AgeFormat{HasMonth: true},
+			expected: person.DateDiffFormat{HasMonth: true},
 		},
 		{
 			format:   "   %m   ",
-			expected: person.AgeFormat{HasMonth: true, MonthValueOnly: true},
+			expected: person.DateDiffFormat{HasMonth: true, MonthValueOnly: true},
 		},
 		{
 			format:   "%y    %Y", // if verb repeated the latest value will be used
-			expected: person.AgeFormat{HasYear: true},
+			expected: person.DateDiffFormat{HasYear: true},
 		},
 		{
 			format:   "   %W   ",
-			expected: person.AgeFormat{HasWeek: true},
+			expected: person.DateDiffFormat{HasWeek: true},
 		},
 		{
 			format:   "   %w   ",
-			expected: person.AgeFormat{HasWeek: true, WeekValueOnly: true},
+			expected: person.DateDiffFormat{HasWeek: true, WeekValueOnly: true},
 		},
 		{
 			format:   "%y    %Y", // if verb repeated the latest value will be used
-			expected: person.AgeFormat{HasYear: true},
+			expected: person.DateDiffFormat{HasYear: true},
 		},
 		{
 			format:   "   %D   ",
-			expected: person.AgeFormat{HasDay: true},
+			expected: person.DateDiffFormat{HasDay: true},
 		},
 		{
 			format:   "   %d   ",
-			expected: person.AgeFormat{HasDay: true, DayValueOnly: true},
+			expected: person.DateDiffFormat{HasDay: true, DayValueOnly: true},
 		},
 		{
 			format:   "%d    %D", // if verb repeated the latest value will be used
-			expected: person.AgeFormat{HasDay: true},
+			expected: person.DateDiffFormat{HasDay: true},
 		},
 		{
 			format: "%Y  %m%D",
-			expected: person.AgeFormat{
+			expected: person.DateDiffFormat{
 				HasYear:  true,
 				HasMonth: true, MonthValueOnly: true,
 				HasDay: true,
@@ -300,7 +300,7 @@ func TestAgeFormatParse(t *testing.T) {
 		},
 		{
 			format: "  %Y%W%d",
-			expected: person.AgeFormat{
+			expected: person.DateDiffFormat{
 				HasYear: true,
 				HasWeek: true,
 				HasDay:  true, DayValueOnly: true,
@@ -308,7 +308,7 @@ func TestAgeFormatParse(t *testing.T) {
 		},
 		{
 			format: " %y%M%w %D ",
-			expected: person.AgeFormat{
+			expected: person.DateDiffFormat{
 				HasYear: true, YearValueOnly: true,
 				HasMonth: true,
 				HasWeek:  true, WeekValueOnly: true,
@@ -317,15 +317,15 @@ func TestAgeFormatParse(t *testing.T) {
 		},
 		{
 			format:   "  %y%d  ",
-			expected: person.AgeFormat{HasYear: true, YearValueOnly: true, HasDay: true, DayValueOnly: true},
+			expected: person.DateDiffFormat{HasYear: true, YearValueOnly: true, HasDay: true, DayValueOnly: true},
 		},
 		{
 			format:   "X",
-			expected: person.AgeFormat{},
+			expected: person.DateDiffFormat{},
 		},
 	}
 	for _, tC := range testCases {
-		got, err := person.UnmarshalAgeFormat(tC.format)
+		got, err := person.UnmarshalDateDiffFormat(tC.format)
 		if err != nil {
 			t.Errorf("UnmarshalAgeFormat(%s) failed: %v", tC.format, err)
 		} else if got != tC.expected {
@@ -338,7 +338,7 @@ func TestAgeFormatParseFails(t *testing.T) {
 	format := "%X%L %S"
 	expected := `format "%X%L %S" has unknown verb X`
 
-	got, err := person.UnmarshalAgeFormat(format)
+	got, err := person.UnmarshalDateDiffFormat(format)
 	if err == nil {
 		t.Fatalf("UnmarshalAgeFormat(%s) = %v, want to fail due to %s", format, got, expected)
 	} else if err.Error() != expected {
@@ -364,7 +364,7 @@ func TestCalculateDateDiff(t *testing.T) {
 	testCases := []struct {
 		start    time.Time
 		end      time.Time
-		format   person.AgeFormat
+		format   person.DateDiffFormat
 		expected person.DateDiff
 	}{
 		// 2000-04-17 - 2003-03-16
@@ -372,25 +372,25 @@ func TestCalculateDateDiff(t *testing.T) {
 		{
 			start:    baseDate,
 			end:      baseDate.AddDate(3, -1, -1),
-			format:   person.AgeFormat{HasYear: true},
+			format:   person.DateDiffFormat{HasYear: true},
 			expected: person.DateDiff{Years: 2},
 		},
 		{
 			start:    baseDate,
 			end:      baseDate.AddDate(3, -1, -1),
-			format:   person.AgeFormat{HasMonth: true},
+			format:   person.DateDiffFormat{HasMonth: true},
 			expected: person.DateDiff{Months: 34},
 		},
 		{
 			start:    baseDate,
 			end:      baseDate.AddDate(3, -1, -1),
-			format:   person.AgeFormat{HasWeek: true},
+			format:   person.DateDiffFormat{HasWeek: true},
 			expected: person.DateDiff{Weeks: 151},
 		},
 		{
 			start:    baseDate,
 			end:      baseDate.AddDate(3, -1, -1),
-			format:   person.AgeFormat{HasDay: true},
+			format:   person.DateDiffFormat{HasDay: true},
 			expected: person.DateDiff{Days: 1063},
 		},
 
@@ -398,37 +398,37 @@ func TestCalculateDateDiff(t *testing.T) {
 		{
 			start:    baseDate,
 			end:      baseDate.AddDate(3, -1, -1),
-			format:   person.AgeFormat{HasYear: true, HasMonth: true},
+			format:   person.DateDiffFormat{HasYear: true, HasMonth: true},
 			expected: person.DateDiff{Years: 2, Months: 10},
 		},
 		{
 			start:    baseDate,
 			end:      baseDate.AddDate(3, -1, -1),
-			format:   person.AgeFormat{HasYear: true, HasWeek: true},
+			format:   person.DateDiffFormat{HasYear: true, HasWeek: true},
 			expected: person.DateDiff{Years: 2, Weeks: 47},
 		},
 		{
 			start:    baseDate,
 			end:      baseDate.AddDate(3, -1, -1),
-			format:   person.AgeFormat{HasYear: true, HasDay: true},
+			format:   person.DateDiffFormat{HasYear: true, HasDay: true},
 			expected: person.DateDiff{Years: 2, Days: 333},
 		},
 		{
 			start:    baseDate,
 			end:      baseDate.AddDate(3, -1, -1),
-			format:   person.AgeFormat{HasMonth: true, HasWeek: true},
+			format:   person.DateDiffFormat{HasMonth: true, HasWeek: true},
 			expected: person.DateDiff{Months: 34, Weeks: 3},
 		},
 		{
 			start:    baseDate,
 			end:      baseDate.AddDate(3, -1, -1),
-			format:   person.AgeFormat{HasMonth: true, HasDay: true},
+			format:   person.DateDiffFormat{HasMonth: true, HasDay: true},
 			expected: person.DateDiff{Months: 34, Days: 27},
 		},
 		{
 			start:    baseDate,
 			end:      baseDate.AddDate(3, -1, -1),
-			format:   person.AgeFormat{HasWeek: true, HasDay: true},
+			format:   person.DateDiffFormat{HasWeek: true, HasDay: true},
 			expected: person.DateDiff{Weeks: 151, Days: 6},
 		},
 
@@ -436,25 +436,25 @@ func TestCalculateDateDiff(t *testing.T) {
 		{
 			start:    baseDate,
 			end:      baseDate.AddDate(3, -1, -1),
-			format:   person.AgeFormat{HasYear: true, HasMonth: true, HasWeek: true},
+			format:   person.DateDiffFormat{HasYear: true, HasMonth: true, HasWeek: true},
 			expected: person.DateDiff{Years: 2, Months: 10, Weeks: 3},
 		},
 		{
 			start:    baseDate,
 			end:      baseDate.AddDate(3, -1, -1),
-			format:   person.AgeFormat{HasYear: true, HasMonth: true, HasDay: true},
+			format:   person.DateDiffFormat{HasYear: true, HasMonth: true, HasDay: true},
 			expected: person.DateDiff{Years: 2, Months: 10, Days: 27},
 		},
 		{
 			start:    baseDate,
 			end:      baseDate.AddDate(3, -1, -1),
-			format:   person.AgeFormat{HasYear: true, HasWeek: true, HasDay: true},
+			format:   person.DateDiffFormat{HasYear: true, HasWeek: true, HasDay: true},
 			expected: person.DateDiff{Years: 2, Weeks: 47, Days: 4},
 		},
 		{
 			start:    baseDate,
 			end:      baseDate.AddDate(3, -1, -1),
-			format:   person.AgeFormat{HasMonth: true, HasWeek: true, HasDay: true},
+			format:   person.DateDiffFormat{HasMonth: true, HasWeek: true, HasDay: true},
 			expected: person.DateDiff{Months: 34, Weeks: 3, Days: 6},
 		},
 
@@ -462,7 +462,7 @@ func TestCalculateDateDiff(t *testing.T) {
 		{
 			start:    baseDate,
 			end:      baseDate.AddDate(3, -1, -1),
-			format:   person.AgeFormat{HasYear: true, HasMonth: true, HasWeek: true, HasDay: true},
+			format:   person.DateDiffFormat{HasYear: true, HasMonth: true, HasWeek: true, HasDay: true},
 			expected: person.DateDiff{Years: 2, Months: 10, Weeks: 3, Days: 6},
 		},
 
@@ -471,25 +471,25 @@ func TestCalculateDateDiff(t *testing.T) {
 		{
 			start:    baseDate,
 			end:      baseDate.AddDate(3, 0, 0),
-			format:   person.AgeFormat{HasYear: true},
+			format:   person.DateDiffFormat{HasYear: true},
 			expected: person.DateDiff{Years: 3},
 		},
 		{
 			start:    baseDate,
 			end:      baseDate.AddDate(3, 0, 0),
-			format:   person.AgeFormat{HasMonth: true},
+			format:   person.DateDiffFormat{HasMonth: true},
 			expected: person.DateDiff{Months: 36},
 		},
 		{
 			start:    baseDate,
 			end:      baseDate.AddDate(3, 0, 0),
-			format:   person.AgeFormat{HasWeek: true},
+			format:   person.DateDiffFormat{HasWeek: true},
 			expected: person.DateDiff{Weeks: 156},
 		},
 		{
 			start:    baseDate,
 			end:      baseDate.AddDate(3, 0, 0),
-			format:   person.AgeFormat{HasDay: true},
+			format:   person.DateDiffFormat{HasDay: true},
 			expected: person.DateDiff{Days: 1095},
 		},
 
@@ -497,37 +497,37 @@ func TestCalculateDateDiff(t *testing.T) {
 		{
 			start:    baseDate,
 			end:      baseDate.AddDate(3, 0, 0),
-			format:   person.AgeFormat{HasYear: true, HasMonth: true},
+			format:   person.DateDiffFormat{HasYear: true, HasMonth: true},
 			expected: person.DateDiff{Years: 3},
 		},
 		{
 			start:    baseDate,
 			end:      baseDate.AddDate(3, 0, 0),
-			format:   person.AgeFormat{HasYear: true, HasWeek: true},
+			format:   person.DateDiffFormat{HasYear: true, HasWeek: true},
 			expected: person.DateDiff{Years: 3},
 		},
 		{
 			start:    baseDate,
 			end:      baseDate.AddDate(3, 0, 0),
-			format:   person.AgeFormat{HasYear: true, HasDay: true},
+			format:   person.DateDiffFormat{HasYear: true, HasDay: true},
 			expected: person.DateDiff{Years: 3},
 		},
 		{
 			start:    baseDate,
 			end:      baseDate.AddDate(3, 0, 0),
-			format:   person.AgeFormat{HasMonth: true, HasWeek: true},
+			format:   person.DateDiffFormat{HasMonth: true, HasWeek: true},
 			expected: person.DateDiff{Months: 36},
 		},
 		{
 			start:    baseDate,
 			end:      baseDate.AddDate(3, 0, 0),
-			format:   person.AgeFormat{HasMonth: true, HasDay: true},
+			format:   person.DateDiffFormat{HasMonth: true, HasDay: true},
 			expected: person.DateDiff{Months: 36},
 		},
 		{
 			start:    baseDate,
 			end:      baseDate.AddDate(3, 0, 0),
-			format:   person.AgeFormat{HasWeek: true, HasDay: true},
+			format:   person.DateDiffFormat{HasWeek: true, HasDay: true},
 			expected: person.DateDiff{Weeks: 156, Days: 3},
 		},
 
@@ -535,25 +535,25 @@ func TestCalculateDateDiff(t *testing.T) {
 		{
 			start:    baseDate,
 			end:      baseDate.AddDate(3, 0, 0),
-			format:   person.AgeFormat{HasYear: true, HasMonth: true, HasWeek: true},
+			format:   person.DateDiffFormat{HasYear: true, HasMonth: true, HasWeek: true},
 			expected: person.DateDiff{Years: 3},
 		},
 		{
 			start:    baseDate,
 			end:      baseDate.AddDate(3, 0, 0),
-			format:   person.AgeFormat{HasYear: true, HasMonth: true, HasDay: true},
+			format:   person.DateDiffFormat{HasYear: true, HasMonth: true, HasDay: true},
 			expected: person.DateDiff{Years: 3},
 		},
 		{
 			start:    baseDate,
 			end:      baseDate.AddDate(3, 0, 0),
-			format:   person.AgeFormat{HasYear: true, HasWeek: true, HasDay: true},
+			format:   person.DateDiffFormat{HasYear: true, HasWeek: true, HasDay: true},
 			expected: person.DateDiff{Years: 3},
 		},
 		{
 			start:    baseDate,
 			end:      baseDate.AddDate(3, 0, 0),
-			format:   person.AgeFormat{HasMonth: true, HasWeek: true, HasDay: true},
+			format:   person.DateDiffFormat{HasMonth: true, HasWeek: true, HasDay: true},
 			expected: person.DateDiff{Months: 36},
 		},
 
@@ -561,7 +561,7 @@ func TestCalculateDateDiff(t *testing.T) {
 		{
 			start:    baseDate,
 			end:      baseDate.AddDate(3, 0, 0),
-			format:   person.AgeFormat{HasYear: true, HasMonth: true, HasWeek: true, HasDay: true},
+			format:   person.DateDiffFormat{HasYear: true, HasMonth: true, HasWeek: true, HasDay: true},
 			expected: person.DateDiff{Years: 3},
 		},
 	}
