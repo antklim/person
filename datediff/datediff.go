@@ -1,5 +1,7 @@
 package datediff
 
+// TODO: add documentation comments
+
 import (
 	"fmt"
 	"time"
@@ -10,6 +12,21 @@ const (
 	daysInWeek   = 7
 )
 
+// TODO: define behavior in case when rawFormat is an empty string. Options are:
+//	- return an error
+//	- return an empty string response and don't calculate age
+//	- declare define format and return age accordingly
+
+// %Y, %y for years
+// %M, %m for months
+// %W, %w for weeks
+// %D, %d for days
+//
+// %Y, %M, %W, and %D = 5 years, 4 months, 3 weeks, and 2 days
+// %y years and %w weeks = 5 years and 3 weeks
+// Y years and w weeks = Y years and w weeks
+
+// TODO: refactoring. dateDiffFormat can be replaced with the bit's mask
 type Format struct {
 	HasYear        bool
 	YearValueOnly  bool
@@ -87,6 +104,7 @@ func (d Diff) Format(f Format) string {
 	}
 }
 
+// TODO: embedd format to Diff, so that it can just call method String()
 func NewDiff(start, end time.Time, f Format) Diff {
 	diff := Diff{}
 
