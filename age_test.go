@@ -385,7 +385,12 @@ func TestDateDiff(t *testing.T) {
 			expected: person.DateDiff{Months: 35},
 		},
 		// weeks
-		// days
+		{
+			start:    baseDate,
+			end:      baseDate.AddDate(3, 0, -1),
+			format:   person.AgeFormat{HasDay: true},
+			expected: person.DateDiff{Days: 1094},
+		},
 
 		// UNITS DOUBLES
 		{
@@ -424,7 +429,12 @@ func TestDateDiff(t *testing.T) {
 			expected: person.DateDiff{Months: 36},
 		},
 		// weeks
-		// days
+		{
+			start:    baseDate,
+			end:      baseDate.AddDate(3, 0, 0),
+			format:   person.AgeFormat{HasDay: true},
+			expected: person.DateDiff{Days: 1095},
+		},
 
 		// UNITS DOUBLES
 		{

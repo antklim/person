@@ -204,6 +204,10 @@ func calculateDateDiff(start, end time.Time, f ageFormat) dateDiff {
 		start = start.AddDate(0, diff.Months, 0)
 	}
 
+	if f.HasDay {
+		diff.Days = fullDaysDiff(start, end)
+	}
+
 	return diff
 }
 
@@ -219,6 +223,14 @@ func fullMonthsDiff(start, end time.Time) (months int) {
 	for start.AddDate(0, months+1, 0).Before(end) ||
 		start.AddDate(0, months+1, 0).Equal(end) {
 		months++
+	}
+	return
+}
+
+func fullDaysDiff(start, end time.Time) (days int) {
+	for start.AddDate(0, 0, days+1).Before(end) ||
+		start.AddDate(0, 0, days+1).Equal(end) {
+		days++
 	}
 	return
 }
