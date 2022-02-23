@@ -406,7 +406,12 @@ func TestDateDiff(t *testing.T) {
 			format:   person.AgeFormat{HasYear: true, HasDay: true},
 			expected: person.DateDiff{Years: 2, Days: 333},
 		},
-		// months weeks
+		{
+			start:    baseDate,
+			end:      baseDate.AddDate(3, -1, -1),
+			format:   person.AgeFormat{HasMonth: true, HasWeek: true},
+			expected: person.DateDiff{Months: 34, Weeks: 3},
+		},
 		{
 			start:    baseDate,
 			end:      baseDate.AddDate(3, -1, -1),
@@ -424,7 +429,12 @@ func TestDateDiff(t *testing.T) {
 			expected: person.DateDiff{Years: 2, Months: 10, Days: 27},
 		},
 		// years weeks days
-		// months weeks days
+		{
+			start:    baseDate,
+			end:      baseDate.AddDate(3, -1, -1),
+			format:   person.AgeFormat{HasMonth: true, HasWeek: true, HasDay: true},
+			expected: person.DateDiff{Months: 34, Weeks: 3, Days: 6},
+		},
 
 		// UNIT QUARTERS
 		// years months weeks days
@@ -465,7 +475,12 @@ func TestDateDiff(t *testing.T) {
 			format:   person.AgeFormat{HasYear: true, HasDay: true},
 			expected: person.DateDiff{Years: 3},
 		},
-		// months weeks
+		{
+			start:    baseDate,
+			end:      baseDate.AddDate(3, 0, 0),
+			format:   person.AgeFormat{HasMonth: true, HasWeek: true},
+			expected: person.DateDiff{Months: 36},
+		},
 		{
 			start:    baseDate,
 			end:      baseDate.AddDate(3, 0, 0),
@@ -475,18 +490,38 @@ func TestDateDiff(t *testing.T) {
 		// weeks days
 
 		// UNIT TRIPLETS
-		// years months weeks
+		{
+			start:    baseDate,
+			end:      baseDate.AddDate(3, 0, 0),
+			format:   person.AgeFormat{HasYear: true, HasMonth: true, HasWeek: true},
+			expected: person.DateDiff{Years: 3},
+		},
 		{
 			start:    baseDate,
 			end:      baseDate.AddDate(3, 0, 0),
 			format:   person.AgeFormat{HasYear: true, HasMonth: true, HasDay: true},
 			expected: person.DateDiff{Years: 3},
 		},
-		// years weeks days
-		// months weeks days
+		{
+			start:    baseDate,
+			end:      baseDate.AddDate(3, 0, 0),
+			format:   person.AgeFormat{HasYear: true, HasWeek: true, HasDay: true},
+			expected: person.DateDiff{Years: 3},
+		},
+		{
+			start:    baseDate,
+			end:      baseDate.AddDate(3, 0, 0),
+			format:   person.AgeFormat{HasMonth: true, HasWeek: true, HasDay: true},
+			expected: person.DateDiff{Months: 36},
+		},
 
 		// UNIT QUARTERS
-		// years months weeks days
+		{
+			start:    baseDate,
+			end:      baseDate.AddDate(3, 0, 0),
+			format:   person.AgeFormat{HasYear: true, HasMonth: true, HasWeek: true, HasDay: true},
+			expected: person.DateDiff{Years: 3},
+		},
 	}
 	for _, tC := range testCases {
 		got := person.CalculateDateDiff(tC.start, tC.end, tC.format)

@@ -21,9 +21,10 @@ import (
 // Y years and w weeks = Y years and w weeks
 
 const (
+	monthsInYear = 12
+	daysInWeek   = 7
 	hoursInDay   = 24
 	hoursInYear  = 365 * hoursInDay
-	monthsInYear = 12
 )
 
 var (
@@ -204,6 +205,11 @@ func calculateDateDiff(start, end time.Time, f ageFormat) dateDiff {
 		start = start.AddDate(0, diff.Months, 0)
 	}
 
+	if f.HasWeek {
+		diff.Weeks = fullWeeksDiff(start, end)
+		start = start.AddDate(0, 0, diff.Weeks*daysInWeek)
+	}
+
 	if f.HasDay {
 		diff.Days = fullDaysDiff(start, end)
 	}
@@ -223,6 +229,16 @@ func fullMonthsDiff(start, end time.Time) (months int) {
 	for start.AddDate(0, months+1, 0).Before(end) ||
 		start.AddDate(0, months+1, 0).Equal(end) {
 		months++
+	}
+	return
+}
+
+func fullWeeksDiff(start, end time.Time) (weeks int) {
+	days := daysInWeek
+	for start.AddDate(0, 0, days).Before(end) ||
+		start.AddDate(0, 0, days).Equal(end) {
+		weeks++
+		days += daysInWeek
 	}
 	return
 }
