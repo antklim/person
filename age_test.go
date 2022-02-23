@@ -360,12 +360,12 @@ func Test(t *testing.T) {
 			format:   person.AgeFormat{HasYear: true},
 			expected: person.DateDiff{Years: 2},
 		},
-		// {
-		// 	start:    baseDate,
-		// 	end:      baseDate.AddDate(3, 0, -1),
-		// 	format:   person.AgeFormat{HasMonth: true},
-		// 	expected: person.DateDiff{Months: 35},
-		// },
+		{
+			start:    baseDate,
+			end:      baseDate.AddDate(3, 0, -1),
+			format:   person.AgeFormat{HasMonth: true},
+			expected: person.DateDiff{Months: 35},
+		},
 		{
 			start:    baseDate,
 			end:      baseDate.AddDate(3, -1, -1),
@@ -379,18 +379,18 @@ func Test(t *testing.T) {
 			format:   person.AgeFormat{HasYear: true},
 			expected: person.DateDiff{Years: 3},
 		},
-		// {
-		// 	start:    baseDate,
-		// 	end:      baseDate.AddDate(3, 0, 0),
-		// 	format:   person.AgeFormat{HasMonth: true},
-		// 	expected: person.DateDiff{Months: 36},
-		// },
-		// {
-		// 	start:    baseDate,
-		// 	end:      baseDate.AddDate(3, 0, 0),
-		// 	format:   person.AgeFormat{HasYear: true, HasMonth: true},
-		// 	expected: person.DateDiff{Years: 3, Months: 0},
-		// },
+		{
+			start:    baseDate,
+			end:      baseDate.AddDate(3, 0, 0),
+			format:   person.AgeFormat{HasMonth: true},
+			expected: person.DateDiff{Months: 36},
+		},
+		{
+			start:    baseDate,
+			end:      baseDate.AddDate(3, 0, 0),
+			format:   person.AgeFormat{HasYear: true, HasMonth: true},
+			expected: person.DateDiff{Years: 3, Months: 0},
+		},
 	}
 	for _, tC := range testCases {
 		got := person.CalculateDateDiff(tC.start, tC.end, tC.format)

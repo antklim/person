@@ -21,8 +21,9 @@ import (
 // Y years and w weeks = Y years and w weeks
 
 const (
-	hoursInDay  = 24
-	hoursInYear = 365 * hoursInDay
+	hoursInDay   = 24
+	hoursInYear  = 365 * hoursInDay
+	monthsInYear = 12
 )
 
 var (
@@ -186,30 +187,37 @@ type dateDiff struct {
 func calculateDateDiff(start, end time.Time, f ageFormat) dateDiff {
 	diff := dateDiff{}
 
-	diff.Years = end.Year() - start.Year()
-	if start.AddDate(diff.Years, 0, 0).After(end) {
-		diff.Years--
+	if f.HasYear {
+		diff.Years = fullYearsDiff(start, end)
+		start = start.AddDate(diff.Years, 0, 0)
 	}
-	start = start.AddDate(diff.Years, 0, 0)
 
 	if f.HasMonth {
 		// getting to the closest year to the end date to reduce
 		// amount of the interations in the following loop
+		var fullYears int
+		if !f.HasYear {
+			fullYears = fullYearsDiff(start, end)
+			start = start.AddDate(fullYears, 0, 0)
+		}
 
-		// y := end.Year() - start.Year()
-		// fmt.Printf("year diff %d\n", y)
-		// start = start.AddDate(y, 0, 0)
-		// fmt.Println(start.Format("2006-01-02"))
-
-		m := 0
-		for start.AddDate(0, m+1, 0).Before(end) {
+		var m int
+		for start.AddDate(0, m+1, 0).Before(end) ||
+			start.AddDate(0, m+1, 0).Equal(end) {
 			m++
 		}
 		start = start.AddDate(0, m, 0)
 
-		// diff.Months = y*12 + m
-		diff.Months = m
+		diff.Months = fullYears*monthsInYear + m
 	}
 
 	return diff
+}
+
+func fullYearsDiff(start, end time.Time) (years int) {
+	years = end.Year() - start.Year()
+	if start.AddDate(years, 0, 0).After(end) {
+		years--
+	}
+	return
 }
