@@ -345,7 +345,24 @@ func TestAgeFormatParseFails(t *testing.T) {
 	}
 }
 
-func Test(t *testing.T) {
+// nolint:funlen
+func TestDateDiff(t *testing.T) {
+	// + years
+	// + months
+	// weeks
+	// days
+	// + years months
+	// years weeks
+	// years days
+	// months weeks
+	// months days
+	// weeks days
+	// years months weeks
+	// years months days
+	// years weeks days
+	// months weeks days
+	// years months weeks days
+
 	baseDate := time.Date(2000, time.April, 17, 0, 0, 0, 0, time.UTC)
 	testCases := []struct {
 		start    time.Time
@@ -354,6 +371,7 @@ func Test(t *testing.T) {
 		expected person.DateDiff
 	}{
 		// 2000-04-17 - 2003-04-16
+		// SINGLE UNIT
 		{
 			start:    baseDate,
 			end:      baseDate.AddDate(3, 0, -1),
@@ -366,13 +384,33 @@ func Test(t *testing.T) {
 			format:   person.AgeFormat{HasMonth: true},
 			expected: person.DateDiff{Months: 35},
 		},
+		// weeks
+		// days
+
+		// UNITS DOUBLES
 		{
 			start:    baseDate,
 			end:      baseDate.AddDate(3, -1, -1),
 			format:   person.AgeFormat{HasYear: true, HasMonth: true},
 			expected: person.DateDiff{Years: 2, Months: 10},
 		},
+		// years weeks
+		// years days
+		// months weeks
+		// months days
+		// weeks days
+
+		// UNIT TRIPLETS
+		// years months weeks
+		// years months days
+		// years weeks days
+		// months weeks days
+
+		// UNIT QUARTERS
+		// years months weeks days
+
 		// 2000-04-17, 2003-04-17
+		// SINGLE UNIT
 		{
 			start:    baseDate,
 			end:      baseDate.AddDate(3, 0, 0),
@@ -385,12 +423,30 @@ func Test(t *testing.T) {
 			format:   person.AgeFormat{HasMonth: true},
 			expected: person.DateDiff{Months: 36},
 		},
+		// weeks
+		// days
+
+		// UNITS DOUBLES
 		{
 			start:    baseDate,
 			end:      baseDate.AddDate(3, 0, 0),
 			format:   person.AgeFormat{HasYear: true, HasMonth: true},
 			expected: person.DateDiff{Years: 3, Months: 0},
 		},
+		// years weeks
+		// years days
+		// months weeks
+		// months days
+		// weeks days
+
+		// UNIT TRIPLETS
+		// years months weeks
+		// years months days
+		// years weeks days
+		// months weeks days
+
+		// UNIT QUARTERS
+		// years months weeks days
 	}
 	for _, tC := range testCases {
 		got := person.CalculateDateDiff(tC.start, tC.end, tC.format)
