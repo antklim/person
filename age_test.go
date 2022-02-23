@@ -7,6 +7,9 @@ import (
 	"github.com/antklim/person"
 )
 
+// TODO: move test data to CSV (especially TestCalculateDateDiff data)
+// TODO: use CSV test data in all tests that calculate and output age
+
 const dateFmt = "2006-01-02"
 
 func TestAge(t *testing.T) {
@@ -101,7 +104,6 @@ func TestAgeOn(t *testing.T) {
 		format   string
 		expected string
 	}{
-		// TODO: add leap year test
 		{
 			date:     time.Date(1991, time.April, 3, 13, 17, 0, 0, time.UTC),
 			format:   "%D",
@@ -184,7 +186,6 @@ func TestAgeOnFails(t *testing.T) {
 	}
 }
 
-// TODO: add tests with months and weeks
 // TODO: add tests with %y, %m, %w, %d and custom time units names
 
 func TestFormatPrint(t *testing.T) {
@@ -344,8 +345,6 @@ func TestAgeFormatParseFails(t *testing.T) {
 		t.Errorf("UnmarshalAgeFormat(%s) failed: %v, want to fail due to %s", format, err, expected)
 	}
 }
-
-// TODO: move test data to CSV
 
 // nolint:funlen
 func TestCalculateDateDiff(t *testing.T) {
