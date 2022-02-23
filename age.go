@@ -79,7 +79,7 @@ func ageOn(dob, date time.Time, f ageFormat) (string, error) {
 	}
 
 	d := calculateDateDiff(dob, date, f)
-	age := formatDateDiff(d, f)
+	age := d.Format(f)
 
 	return age, nil
 }
@@ -87,17 +87,6 @@ func ageOn(dob, date time.Time, f ageFormat) (string, error) {
 // func isAdultOn(dob, date time.Time, adultAge int) bool {
 // 	panic("not implemented")
 // }
-
-func formatDateDiff(d dateDiff, f ageFormat) string {
-	switch {
-	case f.HasDay:
-		return formatNoun(d.Days, "day")
-	case f.HasYear:
-		return formatNoun(d.Years, "year")
-	default:
-		return ""
-	}
-}
 
 // formatNoun takes a number n and noun s in singular form.
 // It returns a number and correct form of noun (singular or plural).
@@ -172,6 +161,19 @@ type dateDiff struct {
 	Months int
 	Weeks  int
 	Days   int
+	// f      ageFormat
+}
+
+// TODO: add months, weeks output
+func (d dateDiff) Format(f ageFormat) string {
+	switch {
+	case f.HasDay:
+		return formatNoun(d.Days, "day")
+	case f.HasYear:
+		return formatNoun(d.Years, "year")
+	default:
+		return ""
+	}
 }
 
 func calculateDateDiff(start, end time.Time, f ageFormat) dateDiff {
