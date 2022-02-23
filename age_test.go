@@ -344,3 +344,59 @@ func TestAgeFormatParseFails(t *testing.T) {
 		t.Errorf("UnmarshalAgeFormat(%s) failed: %v, want to fail due to %s", format, err, expected)
 	}
 }
+
+func Test(t *testing.T) {
+	baseDate := time.Date(2000, time.April, 17, 0, 0, 0, 0, time.UTC)
+	testCases := []struct {
+		start    time.Time
+		end      time.Time
+		format   person.AgeFormat
+		expected person.DateDiff
+	}{
+		// 2000-04-17 - 2003-04-16
+		{
+			start:    baseDate,
+			end:      baseDate.AddDate(3, 0, -1),
+			format:   person.AgeFormat{HasYear: true},
+			expected: person.DateDiff{Years: 2},
+		},
+		// {
+		// 	start:    baseDate,
+		// 	end:      baseDate.AddDate(3, 0, -1),
+		// 	format:   person.AgeFormat{HasMonth: true},
+		// 	expected: person.DateDiff{Months: 35},
+		// },
+		{
+			start:    baseDate,
+			end:      baseDate.AddDate(3, -1, -1),
+			format:   person.AgeFormat{HasYear: true, HasMonth: true},
+			expected: person.DateDiff{Years: 2, Months: 10},
+		},
+		// 2000-04-17, 2003-04-17
+		{
+			start:    baseDate,
+			end:      baseDate.AddDate(3, 0, 0),
+			format:   person.AgeFormat{HasYear: true},
+			expected: person.DateDiff{Years: 3},
+		},
+		// {
+		// 	start:    baseDate,
+		// 	end:      baseDate.AddDate(3, 0, 0),
+		// 	format:   person.AgeFormat{HasMonth: true},
+		// 	expected: person.DateDiff{Months: 36},
+		// },
+		// {
+		// 	start:    baseDate,
+		// 	end:      baseDate.AddDate(3, 0, 0),
+		// 	format:   person.AgeFormat{HasYear: true, HasMonth: true},
+		// 	expected: person.DateDiff{Years: 3, Months: 0},
+		// },
+	}
+	for _, tC := range testCases {
+		got := person.CalculateDateDiff(tC.start, tC.end, tC.format)
+		if got != tC.expected {
+			t.Errorf("CalculateDateDiff(%s, %s, %v) = %v, want %v",
+				tC.start.Format(dateFmt), tC.end.Format(dateFmt), tC.format, got, tC.expected)
+		}
+	}
+}

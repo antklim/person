@@ -175,3 +175,41 @@ func unmarshalAgeFormat(format string) (ageFormat, error) {
 
 	return result, nil
 }
+
+type dateDiff struct {
+	Years  int
+	Months int
+	Weeks  int
+	Days   int
+}
+
+func calculateDateDiff(start, end time.Time, f ageFormat) dateDiff {
+	diff := dateDiff{}
+
+	diff.Years = end.Year() - start.Year()
+	if start.AddDate(diff.Years, 0, 0).After(end) {
+		diff.Years--
+	}
+	start = start.AddDate(diff.Years, 0, 0)
+
+	if f.HasMonth {
+		// getting to the closest year to the end date to reduce
+		// amount of the interations in the following loop
+
+		// y := end.Year() - start.Year()
+		// fmt.Printf("year diff %d\n", y)
+		// start = start.AddDate(y, 0, 0)
+		// fmt.Println(start.Format("2006-01-02"))
+
+		m := 0
+		for start.AddDate(0, m+1, 0).Before(end) {
+			m++
+		}
+		start = start.AddDate(0, m, 0)
+
+		// diff.Months = y*12 + m
+		diff.Months = m
+	}
+
+	return diff
+}
