@@ -194,21 +194,14 @@ func calculateDateDiff(start, end time.Time, f ageFormat) dateDiff {
 
 	if f.HasMonth {
 		// getting to the closest year to the end date to reduce
-		// amount of the interations in the following loop
-		var fullYears int
+		// amount of the interations during the full month calculation
+		var years int
 		if !f.HasYear {
-			fullYears = fullYearsDiff(start, end)
-			start = start.AddDate(fullYears, 0, 0)
+			years = fullYearsDiff(start, end)
 		}
-
-		var m int
-		for start.AddDate(0, m+1, 0).Before(end) ||
-			start.AddDate(0, m+1, 0).Equal(end) {
-			m++
-		}
-		start = start.AddDate(0, m, 0)
-
-		diff.Months = fullYears*monthsInYear + m
+		months := fullMonthsDiff(start.AddDate(years, 0, 0), end)
+		diff.Months = years*monthsInYear + months
+		start = start.AddDate(0, diff.Months, 0)
 	}
 
 	return diff
@@ -218,6 +211,14 @@ func fullYearsDiff(start, end time.Time) (years int) {
 	years = end.Year() - start.Year()
 	if start.AddDate(years, 0, 0).After(end) {
 		years--
+	}
+	return
+}
+
+func fullMonthsDiff(start, end time.Time) (months int) {
+	for start.AddDate(0, months+1, 0).Before(end) ||
+		start.AddDate(0, months+1, 0).Equal(end) {
+		months++
 	}
 	return
 }
