@@ -40,7 +40,7 @@ func TestAge(t *testing.T) {
 		},
 		{
 			dob:      now.AddDate(-22, 1, 2),
-			expected: "21 year",
+			expected: "21 years",
 		},
 		{
 			dob:      now.AddDate(-112, 1, 2),
@@ -131,7 +131,7 @@ func TestAgeOn(t *testing.T) {
 		{
 			date:     time.Date(2012, time.April, 2, 0, 0, 0, 0, time.UTC),
 			format:   "%Y",
-			expected: "21 year",
+			expected: "21 years",
 		},
 	}
 
@@ -181,57 +181,6 @@ func TestAgeOnFails(t *testing.T) {
 				t.Errorf("AgeOn(%s, %s, %s) = %s, want formatted date to be an empty string",
 					dob.Format(dateFmt), tC.date.Format(dateFmt), tC.format, got)
 			}
-		}
-	}
-}
-
-// TODO: add tests with %y, %m, %w, %d and custom time units names
-
-func TestFormatPrint(t *testing.T) {
-	t.Skip()
-	dob := time.Date(2000, time.January, 1, 0, 0, 0, 0, time.UTC)
-	date := time.Date(2010, time.April, 14, 12, 0, 0, 0, time.UTC)
-	testCases := []struct {
-		format   string
-		expected string
-	}{
-		{
-			format:   "%Y",
-			expected: "10 years",
-		},
-		{
-			format:   "%D",
-			expected: "3756 days",
-		},
-		{
-			format:   "%H",
-			expected: "90156 hours",
-		},
-		{
-			format:   "%Y and %D",
-			expected: "10 years and 103 days",
-		},
-		{
-			format:   "%Y and %H",
-			expected: "10 years and 2484 hours",
-		},
-		{
-			format:   "%Y, %D, and %H",
-			expected: "10 years, 103 days, and 12 hours",
-		},
-		{
-			format:   "%D and %H",
-			expected: "3756 days and 12 hours",
-		},
-	}
-	for _, tC := range testCases {
-		got, err := person.AgeOn(dob, date, tC.format)
-		if err != nil {
-			t.Errorf("AgeOn(%s, %s, %s) failed: %v", dob.Format(dateFmt),
-				date.Format(dateFmt), tC.format, err)
-		} else if got != tC.expected {
-			t.Errorf("AgeOn(%s, %s, %s) = %s, want %s", dob.Format(dateFmt),
-				date.Format(dateFmt), tC.format, got, tC.expected)
 		}
 	}
 }

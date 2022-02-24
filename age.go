@@ -23,7 +23,7 @@ func Age(dob time.Time, rawFormat string) (string, error) {
 		return "", err
 	}
 	now := time.Now()
-	return ageOn(dob, now, format)
+	return ageOn(dob, now, format, rawFormat)
 }
 
 // AgeOn returns persons age on a specific date formatted using format.
@@ -34,7 +34,7 @@ func AgeOn(dob, date time.Time, rawFormat string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return ageOn(dob, date, format)
+	return ageOn(dob, date, format, rawFormat)
 }
 
 // // IsAdult returns if a person with provided date of birth is adult.
@@ -50,12 +50,12 @@ func AgeOn(dob, date time.Time, rawFormat string) (string, error) {
 // 	return isAdultOn(dob, date, adultAge)
 // }
 
-func ageOn(dob, date time.Time, format datediff.Format) (string, error) {
+func ageOn(dob, date time.Time, format datediff.Format, rawFormat string) (string, error) {
 	if dob.After(date) {
 		return "", errDobIsInTheFuture
 	}
 	d := datediff.NewDiff(dob, date, format)
-	return d.Format(format), nil
+	return d.Format(format, rawFormat), nil
 }
 
 // func isAdultOn(dob, date time.Time, adultAge int) bool {

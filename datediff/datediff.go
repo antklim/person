@@ -4,6 +4,7 @@ package datediff
 
 import (
 	"fmt"
+	"strings"
 	"time"
 )
 
@@ -11,6 +12,17 @@ const (
 	monthsInYear = 12
 	daysInWeek   = 7
 )
+
+var formatUnits = map[string]string{
+	"%Y": "year",
+	"%y": "year",
+	"%M": "month",
+	"%m": "months",
+	"%W": "week",
+	"%w": "week",
+	"%D": "day",
+	"%d": "day",
+}
 
 // TODO: define behavior in case when rawFormat is an empty string. Options are:
 //	- return an error
@@ -92,16 +104,27 @@ type Diff struct {
 	// f      Format
 }
 
-// TODO: add months and weeks output
-func (d Diff) Format(f Format) string {
-	switch {
-	case f.HasDay:
-		return formatNoun(d.Days, "day")
-	case f.HasYear:
-		return formatNoun(d.Years, "year")
-	default:
-		return ""
+func (d Diff) Format(f Format, rawFormat string) string {
+	result := rawFormat
+
+	for verb, unit := range formatUnits {
+		if strings.Contains(result, verb) {
+			var n int
+			switch unit {
+			case "year":
+				n = d.Years
+			case "month":
+				n = d.Months
+			case "week":
+				n = d.Weeks
+			case "day":
+				n = d.Days
+			}
+			result = strings.ReplaceAll(result, verb, formatNoun(n, unit))
+		}
 	}
+
+	return result
 }
 
 // TODO: embedd format to Diff, so that it can just call method String()
@@ -171,11 +194,11 @@ func fullDaysDiff(start, end time.Time) (days int) {
 	return
 }
 
-// formatNoun takes a number n and noun s in singular form.
+// formatNoun takes a positive number n and noun s in singular form.
 // It returns a number and correct form of noun (singular or plural).
 func formatNoun(n int, s string) string {
 	f := "%d %s"
-	if n%10 != 1 || n%100 == 11 {
+	if n != 1 {
 		f += "s"
 	}
 	return fmt.Sprintf(f, n, s)

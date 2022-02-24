@@ -337,12 +337,105 @@ func TestNewDiff(t *testing.T) { // nolint:funlen
 			format:   datediff.Format{HasYear: true, HasMonth: true, HasWeek: true, HasDay: true},
 			expected: datediff.Diff{Years: 3},
 		},
+
+		{
+			start:    time.Date(2000, time.January, 1, 0, 0, 0, 0, time.UTC),
+			end:      time.Date(2010, time.April, 14, 0, 0, 0, 0, time.UTC),
+			format:   datediff.Format{HasYear: true, HasDay: true},
+			expected: datediff.Diff{Years: 10, Days: 103},
+		},
 	}
 	for _, tC := range testCases {
 		got := datediff.NewDiff(tC.start, tC.end, tC.format)
 		if got != tC.expected {
 			t.Errorf("CalculateDateDiff(%s, %s, %v) = %v, want %v",
 				tC.start.Format(dateFmt), tC.end.Format(dateFmt), tC.format, got, tC.expected)
+		}
+	}
+}
+
+// TODO: add tests with %y, %m, %w, %d and custom time units names
+// TODO: re-use the dates from the CSV/previous test. In this case
+// coorectness of diff calculation validated.
+
+func TestFormatPrint(t *testing.T) {
+	start := time.Date(2000, time.April, 17, 0, 0, 0, 0, time.UTC)
+	end := start.AddDate(3, -1, -1)
+	testCases := []struct {
+		format   string
+		expected string
+	}{
+		{
+			format:   "%Y",
+			expected: "2 years",
+		},
+		{
+			format:   "%M",
+			expected: "34 months",
+		},
+		{
+			format:   "%W",
+			expected: "151 weeks",
+		},
+		{
+			format:   "%D",
+			expected: "1063 days",
+		},
+		// {
+		// 	format:   "%Y and %M",
+		// 	expected: "10 years and 103 days",
+		// },
+		// {
+		// 	format:   "%Y and %W",
+		// 	expected: "10 years and 103 days",
+		// },
+		// {
+		// 	format:   "%Y and %D",
+		// 	expected: "10 years and 103 days",
+		// },
+		// {
+		// 	format:   "%M and %W",
+		// 	expected: "10 years and 103 days",
+		// },
+		// {
+		// 	format:   "%M and %D",
+		// 	expected: "10 years and 103 days",
+		// },
+		// {
+		// 	format:   "%W and %D",
+		// 	expected: "10 years and 103 days",
+		// },
+		// {
+		// 	format:   "%Y, %M and %W",
+		// 	expected: "10 years and 103 days",
+		// },
+		// {
+		// 	format:   "%Y, %M and %D",
+		// 	expected: "10 years and 103 days",
+		// },
+		// {
+		// 	format:   "%Y, %W and %D",
+		// 	expected: "10 years and 103 days",
+		// },
+		// {
+		// 	format:   "%M, %W and %D",
+		// 	expected: "10 years and 103 days",
+		// },
+		// {
+		// 	format:   "%Y, %M, %W and %D",
+		// 	expected: "10 years and 103 days",
+		// },
+	}
+	for _, tC := range testCases {
+		format, err := datediff.Unmarshal(tC.format)
+		if err != nil {
+			t.Errorf("Unmarshal(%s) failed: %v", tC.format, err)
+		}
+
+		diff := datediff.NewDiff(start, end, format)
+		got := diff.Format(format, tC.format)
+		if got != tC.expected {
+			t.Errorf("Format(%#v, %s) = %s, want %s", format, tC.format, got, tC.expected)
 		}
 	}
 }
