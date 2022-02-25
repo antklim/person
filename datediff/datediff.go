@@ -102,37 +102,13 @@ type Diff struct {
 	Months int
 	Weeks  int
 	Days   int
-	// f      Format
+	f      Format
 }
 
-func (d Diff) Format(f Format, rawFormat string) string {
-	result := rawFormat
-
-	// TODO: properly format lower case verbs %y, %m,...
-
-	for verb, unit := range formatUnits {
-		if strings.Contains(result, verb) {
-			var n int
-			switch unit {
-			case "year":
-				n = d.Years
-			case "month":
-				n = d.Months
-			case "week":
-				n = d.Weeks
-			case "day":
-				n = d.Days
-			}
-			result = strings.ReplaceAll(result, verb, formatNoun(n, unit))
-		}
-	}
-
-	return result
-}
-
-// TODO: embedd format to Diff, so that it can just call method String()
+// TODO: add check that end time is after or equal to start time.
+// NewDiff creates Diff according to the provided format.
 func NewDiff(start, end time.Time, f Format) Diff {
-	diff := Diff{}
+	diff := Diff{f: f}
 
 	if f.HasYear {
 		diff.Years = fullYearsDiff(start, end)
@@ -161,6 +137,38 @@ func NewDiff(start, end time.Time, f Format) Diff {
 	}
 
 	return diff
+}
+
+func (d Diff) Equal(other Diff) bool {
+	return d.Years == other.Years &&
+		d.Months == other.Months &&
+		d.Weeks == other.Weeks &&
+		d.Days == other.Days
+}
+
+func (d Diff) Format(f Format, rawFormat string) string {
+	result := rawFormat
+
+	// TODO: properly format lower case verbs %y, %m,...
+
+	for verb, unit := range formatUnits {
+		if strings.Contains(result, verb) {
+			var n int
+			switch unit {
+			case "year":
+				n = d.Years
+			case "month":
+				n = d.Months
+			case "week":
+				n = d.Weeks
+			case "day":
+				n = d.Days
+			}
+			result = strings.ReplaceAll(result, verb, formatNoun(n, unit))
+		}
+	}
+
+	return result
 }
 
 func fullYearsDiff(start, end time.Time) (years int) {
