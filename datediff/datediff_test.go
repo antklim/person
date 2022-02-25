@@ -347,7 +347,7 @@ func TestNewDiff(t *testing.T) { // nolint:funlen
 	}
 	for _, tC := range testCases {
 		got := datediff.NewDiff(tC.start, tC.end, tC.format)
-		if !got.Equal(tC.expected) {
+		if got != tC.expected {
 			t.Errorf("CalculateDateDiff(%s, %s, %v) = %v, want %v",
 				tC.start.Format(dateFmt), tC.end.Format(dateFmt), tC.format, got, tC.expected)
 		}

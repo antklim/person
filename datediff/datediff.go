@@ -98,17 +98,17 @@ func Unmarshal(rawFormat string) (Format, error) {
 }
 
 type Diff struct {
-	Years  int
-	Months int
-	Weeks  int
-	Days   int
-	f      Format
+	Years     int
+	Months    int
+	Weeks     int
+	Days      int
+	rawFormat string
 }
 
 // TODO: add check that end time is after or equal to start time.
 // NewDiff creates Diff according to the provided format.
 func NewDiff(start, end time.Time, f Format) Diff {
-	diff := Diff{f: f}
+	diff := Diff{}
 
 	if f.HasYear {
 		diff.Years = fullYearsDiff(start, end)
@@ -139,14 +139,15 @@ func NewDiff(start, end time.Time, f Format) Diff {
 	return diff
 }
 
-func (d Diff) Equal(other Diff) bool {
-	return d.Years == other.Years &&
-		d.Months == other.Months &&
-		d.Weeks == other.Weeks &&
-		d.Days == other.Days
+func (d Diff) Format(rawFormat string) string {
+	return d.format(rawFormat)
 }
 
-func (d Diff) Format(rawFormat string) string {
+func (d Diff) String() string {
+	return d.format(d.rawFormat)
+}
+
+func (d Diff) format(rawFormat string) string {
 	result := rawFormat
 
 	// TODO: properly format lower case verbs %y, %m,...
