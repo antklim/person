@@ -39,6 +39,7 @@ var formatUnits = map[string]string{
 // Y years and w weeks = Y years and w weeks
 
 // TODO: refactoring. dateDiffFormat can be replaced with the bit's mask
+// TODO: this can be private
 type Format struct {
 	HasYear        bool
 	YearValueOnly  bool
@@ -106,6 +107,8 @@ type Diff struct {
 
 func (d Diff) Format(f Format, rawFormat string) string {
 	result := rawFormat
+
+	// TODO: properly format lower case verbs %y, %m,...
 
 	for verb, unit := range formatUnits {
 		if strings.Contains(result, verb) {
@@ -196,6 +199,7 @@ func fullDaysDiff(start, end time.Time) (days int) {
 
 // formatNoun takes a positive number n and noun s in singular form.
 // It returns a number and correct form of noun (singular or plural).
+// this can accept isPlural(int) bool
 func formatNoun(n int, s string) string {
 	f := "%d %s"
 	if n != 1 {

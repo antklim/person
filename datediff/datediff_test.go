@@ -381,50 +381,50 @@ func TestFormatPrint(t *testing.T) {
 			format:   "%D",
 			expected: "1063 days",
 		},
-		// {
-		// 	format:   "%Y and %M",
-		// 	expected: "10 years and 103 days",
-		// },
-		// {
-		// 	format:   "%Y and %W",
-		// 	expected: "10 years and 103 days",
-		// },
-		// {
-		// 	format:   "%Y and %D",
-		// 	expected: "10 years and 103 days",
-		// },
-		// {
-		// 	format:   "%M and %W",
-		// 	expected: "10 years and 103 days",
-		// },
-		// {
-		// 	format:   "%M and %D",
-		// 	expected: "10 years and 103 days",
-		// },
-		// {
-		// 	format:   "%W and %D",
-		// 	expected: "10 years and 103 days",
-		// },
-		// {
-		// 	format:   "%Y, %M and %W",
-		// 	expected: "10 years and 103 days",
-		// },
-		// {
-		// 	format:   "%Y, %M and %D",
-		// 	expected: "10 years and 103 days",
-		// },
-		// {
-		// 	format:   "%Y, %W and %D",
-		// 	expected: "10 years and 103 days",
-		// },
-		// {
-		// 	format:   "%M, %W and %D",
-		// 	expected: "10 years and 103 days",
-		// },
-		// {
-		// 	format:   "%Y, %M, %W and %D",
-		// 	expected: "10 years and 103 days",
-		// },
+		{
+			format:   "%Y and %M",
+			expected: "2 years and 10 months",
+		},
+		{
+			format:   "%Y and %W",
+			expected: "2 years and 47 weeks",
+		},
+		{
+			format:   "%Y and %D",
+			expected: "2 years and 333 days",
+		},
+		{
+			format:   "%M and %W",
+			expected: "34 months and 3 weeks",
+		},
+		{
+			format:   "%M and %D",
+			expected: "34 months and 27 days",
+		},
+		{
+			format:   "%W and %D",
+			expected: "151 weeks and 6 days",
+		},
+		{
+			format:   "%Y, %M and %W",
+			expected: "2 years, 10 months and 3 weeks",
+		},
+		{
+			format:   "%Y, %M and %D",
+			expected: "2 years, 10 months and 27 days",
+		},
+		{
+			format:   "%Y, %W and %D",
+			expected: "2 years, 47 weeks and 4 days",
+		},
+		{
+			format:   "%M, %W and %D",
+			expected: "34 months, 3 weeks and 6 days",
+		},
+		{
+			format:   "%Y, %M, %W and %D",
+			expected: "2 years, 10 months, 3 weeks and 6 days",
+		},
 	}
 	for _, tC := range testCases {
 		format, err := datediff.Unmarshal(tC.format)
