@@ -433,7 +433,7 @@ func TestFormatPrint(t *testing.T) {
 		}
 
 		diff := datediff.NewDiff(start, end, format)
-		got := diff.Format(format, tC.format)
+		got := diff.Format(tC.format)
 		if got != tC.expected {
 			t.Errorf("Format(%#v, %s) = %s, want %s", format, tC.format, got, tC.expected)
 		}

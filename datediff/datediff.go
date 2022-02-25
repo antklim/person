@@ -146,7 +146,7 @@ func (d Diff) Equal(other Diff) bool {
 		d.Days == other.Days
 }
 
-func (d Diff) Format(f Format, rawFormat string) string {
+func (d Diff) Format(rawFormat string) string {
 	result := rawFormat
 
 	// TODO: properly format lower case verbs %y, %m,...

@@ -55,7 +55,7 @@ func ageOn(dob, date time.Time, format datediff.Format, rawFormat string) (strin
 		return "", errDobIsInTheFuture
 	}
 	d := datediff.NewDiff(dob, date, format)
-	return d.Format(format, rawFormat), nil
+	return d.Format(rawFormat), nil
 }
 
 // func isAdultOn(dob, date time.Time, adultAge int) bool {
