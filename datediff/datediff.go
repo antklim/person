@@ -39,8 +39,7 @@ var formatUnits = map[string]string{
 // Y years and w weeks = Y years and w weeks
 
 // TODO: refactoring. dateDiffFormat can be replaced with the bit's mask
-// TODO: this can be private
-type Format struct {
+type format struct {
 	HasYear        bool
 	YearValueOnly  bool
 	HasMonth       bool
@@ -51,8 +50,8 @@ type Format struct {
 	DayValueOnly   bool
 }
 
-func Unmarshal(rawFormat string) (Format, error) {
-	result := Format{}
+func unmarshal(rawFormat string) (format, error) {
+	result := format{}
 	end := len(rawFormat)
 	for i := 0; i < end; {
 		for i < end && rawFormat[i] != '%' {
@@ -90,7 +89,7 @@ func Unmarshal(rawFormat string) (Format, error) {
 			result.HasDay = true
 			result.DayValueOnly = true
 		default:
-			return Format{}, fmt.Errorf("format %q has unknown verb %c", rawFormat, c)
+			return format{}, fmt.Errorf("format %q has unknown verb %c", rawFormat, c)
 		}
 	}
 
@@ -107,8 +106,13 @@ type Diff struct {
 
 // TODO: add check that end time is after or equal to start time.
 // NewDiff creates Diff according to the provided format.
-func NewDiff(start, end time.Time, f Format) Diff {
-	diff := Diff{}
+func NewDiff(start, end time.Time, rawFormat string) (Diff, error) {
+	diff := Diff{rawFormat: rawFormat}
+
+	f, err := unmarshal(rawFormat)
+	if err != nil {
+		return Diff{}, err
+	}
 
 	if f.HasYear {
 		diff.Years = fullYearsDiff(start, end)
@@ -136,8 +140,18 @@ func NewDiff(start, end time.Time, f Format) Diff {
 		diff.Days = fullDaysDiff(start, end)
 	}
 
-	return diff
+	return diff, nil
 }
+
+func (d Diff) Equal(other Diff) bool {
+	return d.Years == other.Years &&
+		d.Months == other.Months &&
+		d.Weeks == other.Weeks &&
+		d.Days == other.Days
+}
+
+// TODO: add replace current Format tests with String
+// TODO: add test for Format
 
 func (d Diff) Format(rawFormat string) string {
 	return d.format(rawFormat)

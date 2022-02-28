@@ -137,7 +137,7 @@ func TestNewDiff(t *testing.T) { // nolint:funlen
 	testCases := []struct {
 		start    time.Time
 		end      time.Time
-		format   datediff.Format
+		format   string
 		expected datediff.Diff
 	}{
 		// 2000-04-17 - 2003-03-16
@@ -145,25 +145,25 @@ func TestNewDiff(t *testing.T) { // nolint:funlen
 		{
 			start:    baseDate,
 			end:      baseDate.AddDate(3, -1, -1),
-			format:   datediff.Format{HasYear: true},
+			format:   "%Y",
 			expected: datediff.Diff{Years: 2},
 		},
 		{
 			start:    baseDate,
 			end:      baseDate.AddDate(3, -1, -1),
-			format:   datediff.Format{HasMonth: true},
+			format:   "%M",
 			expected: datediff.Diff{Months: 34},
 		},
 		{
 			start:    baseDate,
 			end:      baseDate.AddDate(3, -1, -1),
-			format:   datediff.Format{HasWeek: true},
+			format:   "%W",
 			expected: datediff.Diff{Weeks: 151},
 		},
 		{
 			start:    baseDate,
 			end:      baseDate.AddDate(3, -1, -1),
-			format:   datediff.Format{HasDay: true},
+			format:   "%D",
 			expected: datediff.Diff{Days: 1063},
 		},
 
@@ -171,37 +171,37 @@ func TestNewDiff(t *testing.T) { // nolint:funlen
 		{
 			start:    baseDate,
 			end:      baseDate.AddDate(3, -1, -1),
-			format:   datediff.Format{HasYear: true, HasMonth: true},
+			format:   "%Y %M",
 			expected: datediff.Diff{Years: 2, Months: 10},
 		},
 		{
 			start:    baseDate,
 			end:      baseDate.AddDate(3, -1, -1),
-			format:   datediff.Format{HasYear: true, HasWeek: true},
+			format:   "%Y %W",
 			expected: datediff.Diff{Years: 2, Weeks: 47},
 		},
 		{
 			start:    baseDate,
 			end:      baseDate.AddDate(3, -1, -1),
-			format:   datediff.Format{HasYear: true, HasDay: true},
+			format:   "%Y %D",
 			expected: datediff.Diff{Years: 2, Days: 333},
 		},
 		{
 			start:    baseDate,
 			end:      baseDate.AddDate(3, -1, -1),
-			format:   datediff.Format{HasMonth: true, HasWeek: true},
+			format:   "%M %W",
 			expected: datediff.Diff{Months: 34, Weeks: 3},
 		},
 		{
 			start:    baseDate,
 			end:      baseDate.AddDate(3, -1, -1),
-			format:   datediff.Format{HasMonth: true, HasDay: true},
+			format:   "%M %D",
 			expected: datediff.Diff{Months: 34, Days: 27},
 		},
 		{
 			start:    baseDate,
 			end:      baseDate.AddDate(3, -1, -1),
-			format:   datediff.Format{HasWeek: true, HasDay: true},
+			format:   "%W %D",
 			expected: datediff.Diff{Weeks: 151, Days: 6},
 		},
 
@@ -209,25 +209,25 @@ func TestNewDiff(t *testing.T) { // nolint:funlen
 		{
 			start:    baseDate,
 			end:      baseDate.AddDate(3, -1, -1),
-			format:   datediff.Format{HasYear: true, HasMonth: true, HasWeek: true},
+			format:   "%Y %M %W",
 			expected: datediff.Diff{Years: 2, Months: 10, Weeks: 3},
 		},
 		{
 			start:    baseDate,
 			end:      baseDate.AddDate(3, -1, -1),
-			format:   datediff.Format{HasYear: true, HasMonth: true, HasDay: true},
+			format:   "%Y %M %D",
 			expected: datediff.Diff{Years: 2, Months: 10, Days: 27},
 		},
 		{
 			start:    baseDate,
 			end:      baseDate.AddDate(3, -1, -1),
-			format:   datediff.Format{HasYear: true, HasWeek: true, HasDay: true},
+			format:   "%Y %W %D",
 			expected: datediff.Diff{Years: 2, Weeks: 47, Days: 4},
 		},
 		{
 			start:    baseDate,
 			end:      baseDate.AddDate(3, -1, -1),
-			format:   datediff.Format{HasMonth: true, HasWeek: true, HasDay: true},
+			format:   "%M %W %D",
 			expected: datediff.Diff{Months: 34, Weeks: 3, Days: 6},
 		},
 
@@ -235,7 +235,7 @@ func TestNewDiff(t *testing.T) { // nolint:funlen
 		{
 			start:    baseDate,
 			end:      baseDate.AddDate(3, -1, -1),
-			format:   datediff.Format{HasYear: true, HasMonth: true, HasWeek: true, HasDay: true},
+			format:   "%Y %M %W %D",
 			expected: datediff.Diff{Years: 2, Months: 10, Weeks: 3, Days: 6},
 		},
 
@@ -244,25 +244,25 @@ func TestNewDiff(t *testing.T) { // nolint:funlen
 		{
 			start:    baseDate,
 			end:      baseDate.AddDate(3, 0, 0),
-			format:   datediff.Format{HasYear: true},
+			format:   "%Y",
 			expected: datediff.Diff{Years: 3},
 		},
 		{
 			start:    baseDate,
 			end:      baseDate.AddDate(3, 0, 0),
-			format:   datediff.Format{HasMonth: true},
+			format:   "%M",
 			expected: datediff.Diff{Months: 36},
 		},
 		{
 			start:    baseDate,
 			end:      baseDate.AddDate(3, 0, 0),
-			format:   datediff.Format{HasWeek: true},
+			format:   "%W",
 			expected: datediff.Diff{Weeks: 156},
 		},
 		{
 			start:    baseDate,
 			end:      baseDate.AddDate(3, 0, 0),
-			format:   datediff.Format{HasDay: true},
+			format:   "%D",
 			expected: datediff.Diff{Days: 1095},
 		},
 
@@ -270,37 +270,37 @@ func TestNewDiff(t *testing.T) { // nolint:funlen
 		{
 			start:    baseDate,
 			end:      baseDate.AddDate(3, 0, 0),
-			format:   datediff.Format{HasYear: true, HasMonth: true},
+			format:   "%Y %M",
 			expected: datediff.Diff{Years: 3},
 		},
 		{
 			start:    baseDate,
 			end:      baseDate.AddDate(3, 0, 0),
-			format:   datediff.Format{HasYear: true, HasWeek: true},
+			format:   "%Y %W",
 			expected: datediff.Diff{Years: 3},
 		},
 		{
 			start:    baseDate,
 			end:      baseDate.AddDate(3, 0, 0),
-			format:   datediff.Format{HasYear: true, HasDay: true},
+			format:   "%Y %D",
 			expected: datediff.Diff{Years: 3},
 		},
 		{
 			start:    baseDate,
 			end:      baseDate.AddDate(3, 0, 0),
-			format:   datediff.Format{HasMonth: true, HasWeek: true},
+			format:   "%M %W",
 			expected: datediff.Diff{Months: 36},
 		},
 		{
 			start:    baseDate,
 			end:      baseDate.AddDate(3, 0, 0),
-			format:   datediff.Format{HasMonth: true, HasDay: true},
+			format:   "%M %D",
 			expected: datediff.Diff{Months: 36},
 		},
 		{
 			start:    baseDate,
 			end:      baseDate.AddDate(3, 0, 0),
-			format:   datediff.Format{HasWeek: true, HasDay: true},
+			format:   "%W %D",
 			expected: datediff.Diff{Weeks: 156, Days: 3},
 		},
 
@@ -308,25 +308,25 @@ func TestNewDiff(t *testing.T) { // nolint:funlen
 		{
 			start:    baseDate,
 			end:      baseDate.AddDate(3, 0, 0),
-			format:   datediff.Format{HasYear: true, HasMonth: true, HasWeek: true},
+			format:   "%Y %M %W",
 			expected: datediff.Diff{Years: 3},
 		},
 		{
 			start:    baseDate,
 			end:      baseDate.AddDate(3, 0, 0),
-			format:   datediff.Format{HasYear: true, HasMonth: true, HasDay: true},
+			format:   "%Y %M %D",
 			expected: datediff.Diff{Years: 3},
 		},
 		{
 			start:    baseDate,
 			end:      baseDate.AddDate(3, 0, 0),
-			format:   datediff.Format{HasYear: true, HasWeek: true, HasDay: true},
+			format:   "%Y %W %D",
 			expected: datediff.Diff{Years: 3},
 		},
 		{
 			start:    baseDate,
 			end:      baseDate.AddDate(3, 0, 0),
-			format:   datediff.Format{HasMonth: true, HasWeek: true, HasDay: true},
+			format:   "%M %W %D",
 			expected: datediff.Diff{Months: 36},
 		},
 
@@ -334,21 +334,24 @@ func TestNewDiff(t *testing.T) { // nolint:funlen
 		{
 			start:    baseDate,
 			end:      baseDate.AddDate(3, 0, 0),
-			format:   datediff.Format{HasYear: true, HasMonth: true, HasWeek: true, HasDay: true},
+			format:   "%Y %M %W %D",
 			expected: datediff.Diff{Years: 3},
 		},
 
 		{
 			start:    time.Date(2000, time.January, 1, 0, 0, 0, 0, time.UTC),
 			end:      time.Date(2010, time.April, 14, 0, 0, 0, 0, time.UTC),
-			format:   datediff.Format{HasYear: true, HasDay: true},
+			format:   "%Y %D",
 			expected: datediff.Diff{Years: 10, Days: 103},
 		},
 	}
 	for _, tC := range testCases {
-		got := datediff.NewDiff(tC.start, tC.end, tC.format)
-		if got != tC.expected {
-			t.Errorf("CalculateDateDiff(%s, %s, %v) = %v, want %v",
+		got, err := datediff.NewDiff(tC.start, tC.end, tC.format)
+		if err != nil {
+			t.Errorf("NewDiff(%s, %s, %s) failed: %v",
+				tC.start.Format(dateFmt), tC.end.Format(dateFmt), tC.format, err)
+		} else if !got.Equal(tC.expected) {
+			t.Errorf("NewDiff(%s, %s, %s) = %v, want %#v",
 				tC.start.Format(dateFmt), tC.end.Format(dateFmt), tC.format, got, tC.expected)
 		}
 	}
@@ -427,15 +430,14 @@ func TestFormatPrint(t *testing.T) {
 		},
 	}
 	for _, tC := range testCases {
-		format, err := datediff.Unmarshal(tC.format)
+		diff, err := datediff.NewDiff(start, end, tC.format)
 		if err != nil {
-			t.Errorf("Unmarshal(%s) failed: %v", tC.format, err)
+			t.Errorf("NewDiff(%s, %s, %s) failed: %v",
+				start.Format(dateFmt), end.Format(dateFmt), tC.format, err)
 		}
-
-		diff := datediff.NewDiff(start, end, format)
 		got := diff.Format(tC.format)
 		if got != tC.expected {
-			t.Errorf("Format(%#v, %s) = %s, want %s", format, tC.format, got, tC.expected)
+			t.Errorf("Format(%s) = %s, want %s", tC.format, got, tC.expected)
 		}
 	}
 }
