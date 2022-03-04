@@ -383,11 +383,9 @@ func TestNewDiffFails(t *testing.T) {
 		if err == nil {
 			t.Fatalf("NewDiff(%s, %s, %s) = %v, want to fail due to %s",
 				tC.start.Format(dateFmt), tC.end.Format(dateFmt), tC.format, got, tC.err)
-		} else {
-			if err.Error() != tC.err {
-				t.Errorf("NewDiff(%s, %s, %s) failed: %v, want to fail due to %s",
-					tC.start.Format(dateFmt), tC.end.Format(dateFmt), tC.format, err, tC.err)
-			}
+		} else if err.Error() != tC.err {
+			t.Errorf("NewDiff(%s, %s, %s) failed: %v, want to fail due to %s",
+				tC.start.Format(dateFmt), tC.end.Format(dateFmt), tC.format, err, tC.err)
 		}
 	}
 }
