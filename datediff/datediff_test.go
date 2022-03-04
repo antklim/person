@@ -390,7 +390,6 @@ func TestNewDiffFails(t *testing.T) {
 			}
 		}
 	}
-
 }
 
 // TODO: add tests with %y, %m, %w, %d and custom time units names
