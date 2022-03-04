@@ -357,6 +357,42 @@ func TestNewDiff(t *testing.T) { // nolint:funlen
 	}
 }
 
+func TestNewDiffFails(t *testing.T) {
+	testCases := []struct {
+		start  time.Time
+		end    time.Time
+		format string
+		err    string
+	}{
+		{
+			start:  time.Now().Add(time.Hour),
+			end:    time.Now(),
+			format: "%D",
+			err:    "start date is after end date",
+		},
+		{
+			start:  time.Now(),
+			end:    time.Now().Add(time.Hour),
+			format: " %Z m",
+			err:    `format " %Z m" has unknown verb Z`,
+		},
+	}
+
+	for _, tC := range testCases {
+		got, err := datediff.NewDiff(tC.start, tC.end, tC.format)
+		if err == nil {
+			t.Fatalf("NewDiff(%s, %s, %s) = %v, want to fail due to %s",
+				tC.start.Format(dateFmt), tC.end.Format(dateFmt), tC.format, got, tC.err)
+		} else {
+			if err.Error() != tC.err {
+				t.Errorf("NewDiff(%s, %s, %s) failed: %v, want to fail due to %s",
+					tC.start.Format(dateFmt), tC.end.Format(dateFmt), tC.format, err, tC.err)
+			}
+		}
+	}
+
+}
+
 // TODO: add tests with %y, %m, %w, %d and custom time units names
 // TODO: re-use the dates from the CSV/previous test. In this case
 // coorectness of diff calculation validated.

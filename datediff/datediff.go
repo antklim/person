@@ -3,6 +3,7 @@ package datediff
 // TODO: add documentation comments
 
 import (
+	"errors"
 	"fmt"
 	"strings"
 	"time"
@@ -23,6 +24,8 @@ var formatUnits = map[string]string{
 	"%D": "day",
 	"%d": "day",
 }
+
+var errStartIsAfterEnd = errors.New("start date is after end date")
 
 // TODO: define behavior in case when rawFormat is an empty string. Options are:
 //	- return an error
@@ -104,9 +107,12 @@ type Diff struct {
 	rawFormat string
 }
 
-// TODO: add check that end time is after or equal to start time.
 // NewDiff creates Diff according to the provided format.
 func NewDiff(start, end time.Time, rawFormat string) (Diff, error) {
+	if start.After(end) {
+		return Diff{}, errStartIsAfterEnd
+	}
+
 	diff := Diff{rawFormat: rawFormat}
 
 	f, err := unmarshal(rawFormat)
