@@ -253,86 +253,22 @@ func TestNewDiffFails(t *testing.T) {
 }
 
 // TODO: add tests with %y, %m, %w, %d and custom time units names
-// TODO: re-use the dates from the CSV/previous test. In this case
-// coorectness of diff calculation validated.
 
 func TestString(t *testing.T) {
-	start := time.Date(2000, time.April, 17, 0, 0, 0, 0, time.UTC)
-	end := start.AddDate(3, -1, -1)
-	testCases := []struct {
-		format   string
-		expected string
-	}{
-		{
-			format:   "%Y",
-			expected: "2 years",
-		},
-		{
-			format:   "%M",
-			expected: "34 months",
-		},
-		{
-			format:   "%W",
-			expected: "151 weeks",
-		},
-		{
-			format:   "%D",
-			expected: "1063 days",
-		},
-		{
-			format:   "%Y and %M",
-			expected: "2 years and 10 months",
-		},
-		{
-			format:   "%Y and %W",
-			expected: "2 years and 47 weeks",
-		},
-		{
-			format:   "%Y and %D",
-			expected: "2 years and 333 days",
-		},
-		{
-			format:   "%M and %W",
-			expected: "34 months and 3 weeks",
-		},
-		{
-			format:   "%M and %D",
-			expected: "34 months and 27 days",
-		},
-		{
-			format:   "%W and %D",
-			expected: "151 weeks and 6 days",
-		},
-		{
-			format:   "%Y, %M and %W",
-			expected: "2 years, 10 months and 3 weeks",
-		},
-		{
-			format:   "%Y, %M and %D",
-			expected: "2 years, 10 months and 27 days",
-		},
-		{
-			format:   "%Y, %W and %D",
-			expected: "2 years, 47 weeks and 4 days",
-		},
-		{
-			format:   "%M, %W and %D",
-			expected: "34 months, 3 weeks and 6 days",
-		},
-		{
-			format:   "%Y, %M, %W and %D",
-			expected: "2 years, 10 months, 3 weeks and 6 days",
-		},
+	testCases, err := loadDatediffRecordsForTest()
+	if err != nil {
+		t.Fatal(err)
 	}
+
 	for _, tC := range testCases {
-		diff, err := datediff.NewDiff(start, end, tC.format)
+		diff, err := datediff.NewDiff(tC.start, tC.end, tC.format)
 		if err != nil {
 			t.Errorf("NewDiff(%s, %s, %s) failed: %v",
-				start.Format(dateFmt), end.Format(dateFmt), tC.format, err)
+				tC.start.Format(dateFmt), tC.end.Format(dateFmt), tC.format, err)
 		}
 		got := diff.String()
-		if got != tC.expected {
-			t.Errorf("String() = %s, want %s", got, tC.expected)
+		if got != tC.print {
+			t.Errorf("String() = %s, want %s", got, tC.print)
 		}
 	}
 }

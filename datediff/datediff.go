@@ -168,6 +168,7 @@ func (d Diff) format(rawFormat string) string {
 	result := rawFormat
 
 	// TODO: properly format lower case verbs %y, %m,...
+	// TODO: add feature to trim verb when unit value is 0
 
 	for verb, unit := range formatUnits {
 		if strings.Contains(result, verb) {
