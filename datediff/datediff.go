@@ -225,7 +225,6 @@ func fullDaysDiff(start, end time.Time) (days int) {
 
 // formatNoun takes a positive number n and noun s in singular form.
 // It returns a number and correct form of noun (singular or plural).
-// this can accept isPlural(int) bool
 func formatNoun(n int, s string) string {
 	f := "%d %s"
 	if n != 1 {
