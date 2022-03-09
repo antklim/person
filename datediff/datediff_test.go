@@ -68,7 +68,7 @@ func loadDatediffRecord(r []string) (datediffRecord, error) {
 }
 
 func loadDatediffRecordsForTest() ([]datediffRecord, error) {
-	f, err := os.Open("testdata/dates.csv")
+	f, err := os.Open("testdata/datediff.csv")
 	if err != nil {
 		return nil, err
 	}
