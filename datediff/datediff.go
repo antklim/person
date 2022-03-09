@@ -156,8 +156,6 @@ func (d Diff) Equal(other Diff) bool {
 		d.Days == other.Days
 }
 
-// TODO: add test for Format
-
 func (d Diff) Format(rawFormat string) string {
 	return d.format(rawFormat)
 }

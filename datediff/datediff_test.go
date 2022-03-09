@@ -394,7 +394,7 @@ func TestNewDiffFails(t *testing.T) {
 // TODO: re-use the dates from the CSV/previous test. In this case
 // coorectness of diff calculation validated.
 
-func TestFormatPrint(t *testing.T) {
+func TestString(t *testing.T) {
 	start := time.Date(2000, time.April, 17, 0, 0, 0, 0, time.UTC)
 	end := start.AddDate(3, -1, -1)
 	testCases := []struct {
@@ -472,5 +472,22 @@ func TestFormatPrint(t *testing.T) {
 		if got != tC.expected {
 			t.Errorf("String() = %s, want %s", got, tC.expected)
 		}
+	}
+}
+
+func TestFormat(t *testing.T) {
+	start := time.Date(2000, time.April, 17, 0, 0, 0, 0, time.UTC)
+	end := start.AddDate(3, -1, -1)
+	format := "%Y, %M, %W and %D"
+	diff, err := datediff.NewDiff(start, end, format)
+	if err != nil {
+		t.Errorf("NewDiff(%s, %s, %s) failed: %v",
+			start.Format(dateFmt), end.Format(dateFmt), format, err)
+	}
+	format = "%Y"
+	got := diff.Format(format)
+	expected := "2 years"
+	if got != expected {
+		t.Errorf("Format(%s) = %s, want %s", format, got, expected)
 	}
 }
