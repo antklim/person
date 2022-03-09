@@ -18,23 +18,15 @@ var (
 // provided date of birth is in the future.
 // For example 31 years, 2 months, 1 week, and 2 days.
 func Age(dob time.Time, rawFormat string) (string, error) {
-	format, err := datediff.Unmarshal(rawFormat)
-	if err != nil {
-		return "", err
-	}
 	now := time.Now()
-	return ageOn(dob, now, format, rawFormat)
+	return ageOn(dob, now, rawFormat)
 }
 
 // AgeOn returns persons age on a specific date formatted using format.
 // It returns an error when provided date is before the date of birth (dob).
 // For example 31 years, 2 months, 1 week, and 2 days.
 func AgeOn(dob, date time.Time, rawFormat string) (string, error) {
-	format, err := datediff.Unmarshal(rawFormat)
-	if err != nil {
-		return "", err
-	}
-	return ageOn(dob, date, format, rawFormat)
+	return ageOn(dob, date, rawFormat)
 }
 
 // // IsAdult returns if a person with provided date of birth is adult.
@@ -50,12 +42,15 @@ func AgeOn(dob, date time.Time, rawFormat string) (string, error) {
 // 	return isAdultOn(dob, date, adultAge)
 // }
 
-func ageOn(dob, date time.Time, format datediff.Format, rawFormat string) (string, error) {
+func ageOn(dob, date time.Time, rawFormat string) (string, error) {
 	if dob.After(date) {
 		return "", errDobIsInTheFuture
 	}
-	d := datediff.NewDiff(dob, date, format)
-	return d.Format(format, rawFormat), nil
+	d, err := datediff.NewDiff(dob, date, rawFormat)
+	if err != nil {
+		return "", err
+	}
+	return d.Format(rawFormat), nil
 }
 
 // func isAdultOn(dob, date time.Time, adultAge int) bool {

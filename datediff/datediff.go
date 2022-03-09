@@ -3,6 +3,7 @@ package datediff
 // TODO: add documentation comments
 
 import (
+	"errors"
 	"fmt"
 	"strings"
 	"time"
@@ -24,6 +25,8 @@ var formatUnits = map[string]string{
 	"%d": "day",
 }
 
+var errStartIsAfterEnd = errors.New("start date is after end date")
+
 // TODO: define behavior in case when rawFormat is an empty string. Options are:
 //	- return an error
 //	- return an empty string response and don't calculate age
@@ -39,8 +42,7 @@ var formatUnits = map[string]string{
 // Y years and w weeks = Y years and w weeks
 
 // TODO: refactoring. dateDiffFormat can be replaced with the bit's mask
-// TODO: this can be private
-type Format struct {
+type format struct {
 	HasYear        bool
 	YearValueOnly  bool
 	HasMonth       bool
@@ -51,8 +53,8 @@ type Format struct {
 	DayValueOnly   bool
 }
 
-func Unmarshal(rawFormat string) (Format, error) {
-	result := Format{}
+func unmarshal(rawFormat string) (format, error) {
+	result := format{}
 	end := len(rawFormat)
 	for i := 0; i < end; {
 		for i < end && rawFormat[i] != '%' {
@@ -90,7 +92,7 @@ func Unmarshal(rawFormat string) (Format, error) {
 			result.HasDay = true
 			result.DayValueOnly = true
 		default:
-			return Format{}, fmt.Errorf("format %q has unknown verb %c", rawFormat, c)
+			return format{}, fmt.Errorf("format %q has unknown verb %c", rawFormat, c)
 		}
 	}
 
@@ -98,41 +100,25 @@ func Unmarshal(rawFormat string) (Format, error) {
 }
 
 type Diff struct {
-	Years  int
-	Months int
-	Weeks  int
-	Days   int
-	// f      Format
+	Years     int
+	Months    int
+	Weeks     int
+	Days      int
+	rawFormat string
 }
 
-func (d Diff) Format(f Format, rawFormat string) string {
-	result := rawFormat
-
-	// TODO: properly format lower case verbs %y, %m,...
-
-	for verb, unit := range formatUnits {
-		if strings.Contains(result, verb) {
-			var n int
-			switch unit {
-			case "year":
-				n = d.Years
-			case "month":
-				n = d.Months
-			case "week":
-				n = d.Weeks
-			case "day":
-				n = d.Days
-			}
-			result = strings.ReplaceAll(result, verb, formatNoun(n, unit))
-		}
+// NewDiff creates Diff according to the provided format.
+func NewDiff(start, end time.Time, rawFormat string) (Diff, error) {
+	if start.After(end) {
+		return Diff{}, errStartIsAfterEnd
 	}
 
-	return result
-}
+	diff := Diff{rawFormat: rawFormat}
 
-// TODO: embedd format to Diff, so that it can just call method String()
-func NewDiff(start, end time.Time, f Format) Diff {
-	diff := Diff{}
+	f, err := unmarshal(rawFormat)
+	if err != nil {
+		return Diff{}, err
+	}
 
 	if f.HasYear {
 		diff.Years = fullYearsDiff(start, end)
@@ -160,7 +146,48 @@ func NewDiff(start, end time.Time, f Format) Diff {
 		diff.Days = fullDaysDiff(start, end)
 	}
 
-	return diff
+	return diff, nil
+}
+
+func (d Diff) Equal(other Diff) bool {
+	return d.Years == other.Years &&
+		d.Months == other.Months &&
+		d.Weeks == other.Weeks &&
+		d.Days == other.Days
+}
+
+func (d Diff) Format(rawFormat string) string {
+	return d.format(rawFormat)
+}
+
+func (d Diff) String() string {
+	return d.format(d.rawFormat)
+}
+
+func (d Diff) format(rawFormat string) string {
+	result := rawFormat
+
+	// TODO: properly format lower case verbs %y, %m,...
+	// TODO: add feature to trim verb when unit value is 0
+
+	for verb, unit := range formatUnits {
+		if strings.Contains(result, verb) {
+			var n int
+			switch unit {
+			case "year":
+				n = d.Years
+			case "month":
+				n = d.Months
+			case "week":
+				n = d.Weeks
+			case "day":
+				n = d.Days
+			}
+			result = strings.ReplaceAll(result, verb, formatNoun(n, unit))
+		}
+	}
+
+	return result
 }
 
 func fullYearsDiff(start, end time.Time) (years int) {
@@ -199,7 +226,6 @@ func fullDaysDiff(start, end time.Time) (days int) {
 
 // formatNoun takes a positive number n and noun s in singular form.
 // It returns a number and correct form of noun (singular or plural).
-// this can accept isPlural(int) bool
 func formatNoun(n int, s string) string {
 	f := "%d %s"
 	if n != 1 {
