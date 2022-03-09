@@ -468,9 +468,9 @@ func TestFormatPrint(t *testing.T) {
 			t.Errorf("NewDiff(%s, %s, %s) failed: %v",
 				start.Format(dateFmt), end.Format(dateFmt), tC.format, err)
 		}
-		got := diff.Format(tC.format)
+		got := diff.String()
 		if got != tC.expected {
-			t.Errorf("Format(%s) = %s, want %s", tC.format, got, tC.expected)
+			t.Errorf("String() = %s, want %s", got, tC.expected)
 		}
 	}
 }
