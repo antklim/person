@@ -24,7 +24,7 @@ const (
 	printFld
 )
 
-type datesRecord struct {
+type datediffRecord struct {
 	start  time.Time
 	end    time.Time
 	format string
@@ -32,39 +32,64 @@ type datesRecord struct {
 	print  string
 }
 
-func loadDatesRecord(r []string) (datesRecord, error) {
+func loadDatediffRecord(r []string) (datediffRecord, error) {
 	start, err := time.Parse(dateFmt, r[startFld])
 	if err != nil {
-		return datesRecord{}, err
+		return datediffRecord{}, err
 	}
 	end, err := time.Parse(dateFmt, r[endFld])
 	if err != nil {
-		return datesRecord{}, err
+		return datediffRecord{}, err
 	}
 	years, err := strconv.Atoi(r[yearsFld])
 	if err != nil {
-		return datesRecord{}, err
+		return datediffRecord{}, err
 	}
 	months, err := strconv.Atoi(r[monthsFld])
 	if err != nil {
-		return datesRecord{}, err
+		return datediffRecord{}, err
 	}
 	weeks, err := strconv.Atoi(r[weeksFld])
 	if err != nil {
-		return datesRecord{}, err
+		return datediffRecord{}, err
 	}
 	days, err := strconv.Atoi(r[daysFld])
 	if err != nil {
-		return datesRecord{}, err
+		return datediffRecord{}, err
 	}
 
-	return datesRecord{
+	return datediffRecord{
 		start:  start,
 		end:    end,
 		format: r[formatFld],
 		diff:   datediff.Diff{Years: years, Months: months, Weeks: weeks, Days: days},
 		print:  r[printFld],
 	}, nil
+}
+
+func loadDatediffRecordsForTest() ([]datediffRecord, error) {
+	f, err := os.Open("testdata/dates.csv")
+	if err != nil {
+		return nil, err
+	}
+	defer f.Close()
+
+	r := csv.NewReader(f)
+	r.Comment = '#'
+	rawRecords, err := r.ReadAll()
+	if err != nil {
+		return nil, err
+	}
+
+	var dr []datediffRecord
+	for _, rr := range rawRecords {
+		r, err := loadDatediffRecord(rr)
+		if err != nil {
+			return nil, err
+		}
+		dr = append(dr, r)
+	}
+	return dr, nil
 }
 
 func TestUnmarshal(t *testing.T) {
@@ -177,33 +202,19 @@ func TestUnmarshalFails(t *testing.T) {
 }
 
 func TestNewDiff(t *testing.T) {
-	f, err := os.Open("testdata/dates.csv")
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer f.Close()
-
-	r := csv.NewReader(f)
-	r.Comment = '#'
-	testCases, err := r.ReadAll()
+	testCases, err := loadDatediffRecordsForTest()
 	if err != nil {
 		t.Fatal(err)
 	}
 
 	for _, tC := range testCases {
-		testRecord, err := loadDatesRecord(tC)
-		if err != nil {
-			t.Fatal(err)
-		}
-		got, err := datediff.NewDiff(testRecord.start, testRecord.end, testRecord.format)
+		got, err := datediff.NewDiff(tC.start, tC.end, tC.format)
 		if err != nil {
 			t.Errorf("NewDiff(%s, %s, %s) failed: %v",
-				testRecord.start.Format(dateFmt), testRecord.end.Format(dateFmt),
-				testRecord.format, err)
-		} else if !got.Equal(testRecord.diff) {
+				tC.start.Format(dateFmt), tC.end.Format(dateFmt), tC.format, err)
+		} else if !got.Equal(tC.diff) {
 			t.Errorf("NewDiff(%s, %s, %s) = %v, want %#v",
-				testRecord.start.Format(dateFmt), testRecord.end.Format(dateFmt),
-				testRecord.format, got, testRecord.diff)
+				tC.start.Format(dateFmt), tC.end.Format(dateFmt), tC.format, got, tC.diff)
 		}
 	}
 }
