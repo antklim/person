@@ -1,6 +1,9 @@
 package datediff_test
 
 import (
+	"encoding/csv"
+	"os"
+	"strconv"
 	"testing"
 	"time"
 
@@ -8,6 +11,61 @@ import (
 )
 
 const dateFmt = "2006-01-02"
+
+// these are the fields of testdata/dates.csv
+const (
+	startFld = iota
+	endFld
+	formatFld
+	yearsFld
+	monthsFld
+	weeksFld
+	daysFld
+	printFld
+)
+
+type datesRecord struct {
+	start  time.Time
+	end    time.Time
+	format string
+	diff   datediff.Diff
+	print  string
+}
+
+func loadDatesRecord(r []string) (datesRecord, error) {
+	start, err := time.Parse(dateFmt, r[startFld])
+	if err != nil {
+		return datesRecord{}, err
+	}
+	end, err := time.Parse(dateFmt, r[endFld])
+	if err != nil {
+		return datesRecord{}, err
+	}
+	years, err := strconv.Atoi(r[yearsFld])
+	if err != nil {
+		return datesRecord{}, err
+	}
+	months, err := strconv.Atoi(r[monthsFld])
+	if err != nil {
+		return datesRecord{}, err
+	}
+	weeks, err := strconv.Atoi(r[weeksFld])
+	if err != nil {
+		return datesRecord{}, err
+	}
+	days, err := strconv.Atoi(r[daysFld])
+	if err != nil {
+		return datesRecord{}, err
+	}
+
+	return datesRecord{
+		start:  start,
+		end:    end,
+		format: r[formatFld],
+		diff:   datediff.Diff{Years: years, Months: months, Weeks: weeks, Days: days},
+		print:  r[printFld],
+	}, nil
+}
 
 func TestUnmarshal(t *testing.T) {
 	testCases := []struct {
@@ -118,241 +176,34 @@ func TestUnmarshalFails(t *testing.T) {
 	}
 }
 
-// TODO: move test data to CSV
-
-func TestNewDiff(t *testing.T) { // nolint:funlen
-	// years months
-	// years weeks
-	// years days
-	// months weeks
-	// months days
-	// weeks days
-	// years months weeks
-	// years months days
-	// years weeks days
-	// months weeks days
-	// years months weeks days
-
-	baseDate := time.Date(2000, time.April, 17, 0, 0, 0, 0, time.UTC)
-	testCases := []struct {
-		start    time.Time
-		end      time.Time
-		format   string
-		expected datediff.Diff
-	}{
-		// 2000-04-17 - 2003-03-16
-		// SINGLE UNITS
-		{
-			start:    baseDate,
-			end:      baseDate.AddDate(3, -1, -1),
-			format:   "%Y",
-			expected: datediff.Diff{Years: 2},
-		},
-		{
-			start:    baseDate,
-			end:      baseDate.AddDate(3, -1, -1),
-			format:   "%M",
-			expected: datediff.Diff{Months: 34},
-		},
-		{
-			start:    baseDate,
-			end:      baseDate.AddDate(3, -1, -1),
-			format:   "%W",
-			expected: datediff.Diff{Weeks: 151},
-		},
-		{
-			start:    baseDate,
-			end:      baseDate.AddDate(3, -1, -1),
-			format:   "%D",
-			expected: datediff.Diff{Days: 1063},
-		},
-
-		// UNITS DOUBLES
-		{
-			start:    baseDate,
-			end:      baseDate.AddDate(3, -1, -1),
-			format:   "%Y %M",
-			expected: datediff.Diff{Years: 2, Months: 10},
-		},
-		{
-			start:    baseDate,
-			end:      baseDate.AddDate(3, -1, -1),
-			format:   "%Y %W",
-			expected: datediff.Diff{Years: 2, Weeks: 47},
-		},
-		{
-			start:    baseDate,
-			end:      baseDate.AddDate(3, -1, -1),
-			format:   "%Y %D",
-			expected: datediff.Diff{Years: 2, Days: 333},
-		},
-		{
-			start:    baseDate,
-			end:      baseDate.AddDate(3, -1, -1),
-			format:   "%M %W",
-			expected: datediff.Diff{Months: 34, Weeks: 3},
-		},
-		{
-			start:    baseDate,
-			end:      baseDate.AddDate(3, -1, -1),
-			format:   "%M %D",
-			expected: datediff.Diff{Months: 34, Days: 27},
-		},
-		{
-			start:    baseDate,
-			end:      baseDate.AddDate(3, -1, -1),
-			format:   "%W %D",
-			expected: datediff.Diff{Weeks: 151, Days: 6},
-		},
-
-		// UNIT TRIPLETS
-		{
-			start:    baseDate,
-			end:      baseDate.AddDate(3, -1, -1),
-			format:   "%Y %M %W",
-			expected: datediff.Diff{Years: 2, Months: 10, Weeks: 3},
-		},
-		{
-			start:    baseDate,
-			end:      baseDate.AddDate(3, -1, -1),
-			format:   "%Y %M %D",
-			expected: datediff.Diff{Years: 2, Months: 10, Days: 27},
-		},
-		{
-			start:    baseDate,
-			end:      baseDate.AddDate(3, -1, -1),
-			format:   "%Y %W %D",
-			expected: datediff.Diff{Years: 2, Weeks: 47, Days: 4},
-		},
-		{
-			start:    baseDate,
-			end:      baseDate.AddDate(3, -1, -1),
-			format:   "%M %W %D",
-			expected: datediff.Diff{Months: 34, Weeks: 3, Days: 6},
-		},
-
-		// UNIT QUARTERS
-		{
-			start:    baseDate,
-			end:      baseDate.AddDate(3, -1, -1),
-			format:   "%Y %M %W %D",
-			expected: datediff.Diff{Years: 2, Months: 10, Weeks: 3, Days: 6},
-		},
-
-		// 2000-04-17, 2003-04-17
-		// SINGLE UNIT
-		{
-			start:    baseDate,
-			end:      baseDate.AddDate(3, 0, 0),
-			format:   "%Y",
-			expected: datediff.Diff{Years: 3},
-		},
-		{
-			start:    baseDate,
-			end:      baseDate.AddDate(3, 0, 0),
-			format:   "%M",
-			expected: datediff.Diff{Months: 36},
-		},
-		{
-			start:    baseDate,
-			end:      baseDate.AddDate(3, 0, 0),
-			format:   "%W",
-			expected: datediff.Diff{Weeks: 156},
-		},
-		{
-			start:    baseDate,
-			end:      baseDate.AddDate(3, 0, 0),
-			format:   "%D",
-			expected: datediff.Diff{Days: 1095},
-		},
-
-		// UNITS DOUBLES
-		{
-			start:    baseDate,
-			end:      baseDate.AddDate(3, 0, 0),
-			format:   "%Y %M",
-			expected: datediff.Diff{Years: 3},
-		},
-		{
-			start:    baseDate,
-			end:      baseDate.AddDate(3, 0, 0),
-			format:   "%Y %W",
-			expected: datediff.Diff{Years: 3},
-		},
-		{
-			start:    baseDate,
-			end:      baseDate.AddDate(3, 0, 0),
-			format:   "%Y %D",
-			expected: datediff.Diff{Years: 3},
-		},
-		{
-			start:    baseDate,
-			end:      baseDate.AddDate(3, 0, 0),
-			format:   "%M %W",
-			expected: datediff.Diff{Months: 36},
-		},
-		{
-			start:    baseDate,
-			end:      baseDate.AddDate(3, 0, 0),
-			format:   "%M %D",
-			expected: datediff.Diff{Months: 36},
-		},
-		{
-			start:    baseDate,
-			end:      baseDate.AddDate(3, 0, 0),
-			format:   "%W %D",
-			expected: datediff.Diff{Weeks: 156, Days: 3},
-		},
-
-		// UNIT TRIPLETS
-		{
-			start:    baseDate,
-			end:      baseDate.AddDate(3, 0, 0),
-			format:   "%Y %M %W",
-			expected: datediff.Diff{Years: 3},
-		},
-		{
-			start:    baseDate,
-			end:      baseDate.AddDate(3, 0, 0),
-			format:   "%Y %M %D",
-			expected: datediff.Diff{Years: 3},
-		},
-		{
-			start:    baseDate,
-			end:      baseDate.AddDate(3, 0, 0),
-			format:   "%Y %W %D",
-			expected: datediff.Diff{Years: 3},
-		},
-		{
-			start:    baseDate,
-			end:      baseDate.AddDate(3, 0, 0),
-			format:   "%M %W %D",
-			expected: datediff.Diff{Months: 36},
-		},
-
-		// UNIT QUARTERS
-		{
-			start:    baseDate,
-			end:      baseDate.AddDate(3, 0, 0),
-			format:   "%Y %M %W %D",
-			expected: datediff.Diff{Years: 3},
-		},
-
-		{
-			start:    time.Date(2000, time.January, 1, 0, 0, 0, 0, time.UTC),
-			end:      time.Date(2010, time.April, 14, 0, 0, 0, 0, time.UTC),
-			format:   "%Y %D",
-			expected: datediff.Diff{Years: 10, Days: 103},
-		},
+func TestNewDiff(t *testing.T) {
+	f, err := os.Open("testdata/dates.csv")
+	if err != nil {
+		t.Fatal(err)
 	}
+	defer f.Close()
+
+	r := csv.NewReader(f)
+	r.Comment = '#'
+	testCases, err := r.ReadAll()
+	if err != nil {
+		t.Fatal(err)
+	}
+
 	for _, tC := range testCases {
-		got, err := datediff.NewDiff(tC.start, tC.end, tC.format)
+		testRecord, err := loadDatesRecord(tC)
+		if err != nil {
+			t.Fatal(err)
+		}
+		got, err := datediff.NewDiff(testRecord.start, testRecord.end, testRecord.format)
 		if err != nil {
 			t.Errorf("NewDiff(%s, %s, %s) failed: %v",
-				tC.start.Format(dateFmt), tC.end.Format(dateFmt), tC.format, err)
-		} else if !got.Equal(tC.expected) {
+				testRecord.start.Format(dateFmt), testRecord.end.Format(dateFmt),
+				testRecord.format, err)
+		} else if !got.Equal(testRecord.diff) {
 			t.Errorf("NewDiff(%s, %s, %s) = %v, want %#v",
-				tC.start.Format(dateFmt), tC.end.Format(dateFmt), tC.format, got, tC.expected)
+				testRecord.start.Format(dateFmt), testRecord.end.Format(dateFmt),
+				testRecord.format, got, testRecord.diff)
 		}
 	}
 }
