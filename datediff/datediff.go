@@ -103,9 +103,11 @@ func unmarshal(rawFormat string) (format, error) {
 		case 'D':
 			result.HasDay = true
 			result.DayValueOnly = false
+			result.UnitsMask |= HasDayMask
 		case 'd':
 			result.HasDay = true
 			result.DayValueOnly = true
+			result.UnitsMask |= HasDayMask
 		default:
 			return format{}, fmt.Errorf("format %q has unknown verb %c", rawFormat, c)
 		}
