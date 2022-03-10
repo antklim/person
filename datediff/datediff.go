@@ -3,25 +3,16 @@ package datediff
 import (
 	"errors"
 	"fmt"
+	"strconv"
 	"strings"
 	"time"
+	"unicode"
 )
 
 const (
 	monthsInYear = 12
 	daysInWeek   = 7
 )
-
-var formatUnits = map[string]string{
-	"%Y": "year",
-	"%y": "year",
-	"%M": "month",
-	"%m": "months",
-	"%W": "week",
-	"%w": "week",
-	"%D": "day",
-	"%d": "day",
-}
 
 var (
 	errStartIsAfterEnd   = errors.New("start date is after end date")
@@ -167,10 +158,20 @@ func (d Diff) String() string {
 	return format(d, d.rawFormat)
 }
 
+var formatUnits = map[string]string{
+	"%Y": "year",
+	"%y": "year",
+	"%M": "month",
+	"%m": "month",
+	"%W": "week",
+	"%w": "week",
+	"%D": "day",
+	"%d": "day",
+}
+
 func format(diff Diff, rawFormat string) string {
 	result := rawFormat
 
-	// TODO: properly format lower case verbs %y, %m,...
 	// TODO: add feature to trim verb when unit value is 0
 
 	for verb, unit := range formatUnits {
@@ -186,7 +187,11 @@ func format(diff Diff, rawFormat string) string {
 			case "day":
 				n = diff.Days
 			}
-			result = strings.ReplaceAll(result, verb, formatNoun(n, unit))
+			replacement := strconv.Itoa(n)
+			if r := rune(verb[1]); unicode.IsUpper(r) {
+				replacement = formatNoun(n, unit)
+			}
+			result = strings.ReplaceAll(result, verb, replacement)
 		}
 	}
 

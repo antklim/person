@@ -235,8 +235,6 @@ func TestNewDiffFails(t *testing.T) {
 	}
 }
 
-// TODO: add tests with %y, %m, %w, %d and custom time units names
-
 func TestString(t *testing.T) {
 	testCases, err := loadDatediffRecordsForTest()
 	if err != nil {
