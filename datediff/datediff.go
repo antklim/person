@@ -36,12 +36,8 @@ var errStartIsAfterEnd = errors.New("start date is after end date")
 // %D, %d for days
 
 type format struct {
-	YearValueOnly  bool
-	MonthValueOnly bool
-	WeekValueOnly  bool
-	DayValueOnly   bool
-	DiffMode       DiffMode
-	FormatMode     FormatMode
+	DiffMode   DiffMode
+	FormatMode FormatMode
 }
 
 type DiffMode uint8
