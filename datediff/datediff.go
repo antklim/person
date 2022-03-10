@@ -38,10 +38,10 @@ var errStartIsAfterEnd = errors.New("start date is after end date")
 type DiffMode uint8
 
 const (
-	ModeYear DiffMode = 1 << (8 - 1 - iota)
-	ModeMonth
-	ModeWeek
-	ModeDay
+	ModeYears DiffMode = 1 << (8 - 1 - iota)
+	ModeMonths
+	ModeWeeks
+	ModeDays
 )
 
 func unmarshal(rawFormat string) (DiffMode, error) {
@@ -59,13 +59,13 @@ func unmarshal(rawFormat string) (DiffMode, error) {
 		i++
 		switch c := rawFormat[i]; c {
 		case 'Y', 'y':
-			mode |= ModeYear
+			mode |= ModeYears
 		case 'M', 'm':
-			mode |= ModeMonth
+			mode |= ModeMonths
 		case 'W', 'w':
-			mode |= ModeWeek
+			mode |= ModeWeeks
 		case 'D', 'd':
-			mode |= ModeDay
+			mode |= ModeDays
 		default:
 			return 0, fmt.Errorf("format %q has unknown verb %c", rawFormat, c)
 		}
@@ -80,8 +80,7 @@ type Diff struct {
 	Months    int
 	Weeks     int
 	Days      int
-	rawFormat string   // initial format, i.e "%Y and %M"
-	mode      DiffMode // difference mode, i.e years and months
+	rawFormat string // initial format, i.e "%Y and %M"
 }
 
 // NewDiff creates Diff according to the provided format.
@@ -116,21 +115,18 @@ func NewDiff(start, end time.Time, rawFormat string) (Diff, error) {
 		return Diff{}, err
 	}
 
-	diff := Diff{
-		rawFormat: rawFormat,
-		mode:      mode,
-	}
+	diff := Diff{rawFormat: rawFormat}
 
-	if mode&ModeYear != 0 {
+	if mode&ModeYears != 0 {
 		diff.Years = fullYearsDiff(start, end)
 		start = start.AddDate(diff.Years, 0, 0)
 	}
 
-	if mode&ModeMonth != 0 {
+	if mode&ModeMonths != 0 {
 		// getting to the closest year to the end date to reduce
 		// amount of the interations during the full month calculation
 		var years int
-		if mode&ModeYear == 0 {
+		if mode&ModeYears == 0 {
 			years = fullYearsDiff(start, end)
 		}
 		months := fullMonthsDiff(start.AddDate(years, 0, 0), end)
@@ -138,12 +134,12 @@ func NewDiff(start, end time.Time, rawFormat string) (Diff, error) {
 		start = start.AddDate(0, diff.Months, 0)
 	}
 
-	if mode&ModeWeek != 0 {
+	if mode&ModeWeeks != 0 {
 		diff.Weeks = fullWeeksDiff(start, end)
 		start = start.AddDate(0, 0, diff.Weeks*daysInWeek)
 	}
 
-	if mode&ModeDay != 0 {
+	if mode&ModeDays != 0 {
 		diff.Days = fullDaysDiff(start, end)
 	}
 

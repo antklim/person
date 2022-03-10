@@ -100,67 +100,67 @@ func TestUnmarshal(t *testing.T) {
 	}{
 		{
 			format:   "   %Y   ",
-			expected: datediff.ModeYear,
+			expected: datediff.ModeYears,
 		},
 		{
 			format:   "   %y   ",
-			expected: datediff.ModeYear,
+			expected: datediff.ModeYears,
 		},
 		{
 			format:   "%y    %Y", // if verb repeated both verbs will be replaced with the related values
-			expected: datediff.ModeYear,
+			expected: datediff.ModeYears,
 		},
 		{
 			format:   "   %M   ",
-			expected: datediff.ModeMonth,
+			expected: datediff.ModeMonths,
 		},
 		{
 			format:   "   %m   ",
-			expected: datediff.ModeMonth,
+			expected: datediff.ModeMonths,
 		},
 		{
 			format:   "%m    %M", // if verb repeated both verbs will be replaced with the related values
-			expected: datediff.ModeMonth,
+			expected: datediff.ModeMonths,
 		},
 		{
 			format:   "   %W   ",
-			expected: datediff.ModeWeek,
+			expected: datediff.ModeWeeks,
 		},
 		{
 			format:   "   %w   ",
-			expected: datediff.ModeWeek,
+			expected: datediff.ModeWeeks,
 		},
 		{
 			format:   "%w    %W", // if verb repeated both verbs will be replaced with the related values
-			expected: datediff.ModeWeek,
+			expected: datediff.ModeWeeks,
 		},
 		{
 			format:   "   %D   ",
-			expected: datediff.ModeDay,
+			expected: datediff.ModeDays,
 		},
 		{
 			format:   "   %d   ",
-			expected: datediff.ModeDay,
+			expected: datediff.ModeDays,
 		},
 		{
 			format:   "%d    %D", // if verb repeated both verbs will be replaced with the related values
-			expected: datediff.ModeDay,
+			expected: datediff.ModeDays,
 		},
 		{
 			format:   "%Y  %m%D",
-			expected: datediff.ModeYear | datediff.ModeMonth | datediff.ModeDay,
+			expected: datediff.ModeYears | datediff.ModeMonths | datediff.ModeDays,
 		},
 		{
 			format:   "  %Y%W%d",
-			expected: datediff.ModeYear | datediff.ModeWeek | datediff.ModeDay,
+			expected: datediff.ModeYears | datediff.ModeWeeks | datediff.ModeDays,
 		},
 		{
 			format:   " %y%M%w %D ",
-			expected: datediff.ModeYear | datediff.ModeMonth | datediff.ModeWeek | datediff.ModeDay,
+			expected: datediff.ModeYears | datediff.ModeMonths | datediff.ModeWeeks | datediff.ModeDays,
 		},
 		{
 			format:   "  %y%d  ",
-			expected: datediff.ModeYear | datediff.ModeDay,
+			expected: datediff.ModeYears | datediff.ModeDays,
 		},
 		{
 			format:   "X",
