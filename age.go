@@ -1,7 +1,5 @@
 package person
 
-// TODO: review documentation comments
-
 import (
 	"errors"
 	"time"
