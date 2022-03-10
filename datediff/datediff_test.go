@@ -92,7 +92,6 @@ func loadDatediffRecordsForTest() ([]datediffRecord, error) {
 	return dr, nil
 }
 
-// TODO: use testdata
 func TestUnmarshal(t *testing.T) {
 	testCases := []struct {
 		format   string
@@ -107,19 +106,11 @@ func TestUnmarshal(t *testing.T) {
 			expected: datediff.ModeYears,
 		},
 		{
-			format:   "%y    %Y", // if verb repeated both verbs will be replaced with the related values
-			expected: datediff.ModeYears,
-		},
-		{
 			format:   "   %M   ",
 			expected: datediff.ModeMonths,
 		},
 		{
 			format:   "   %m   ",
-			expected: datediff.ModeMonths,
-		},
-		{
-			format:   "%m    %M", // if verb repeated both verbs will be replaced with the related values
 			expected: datediff.ModeMonths,
 		},
 		{
@@ -131,19 +122,11 @@ func TestUnmarshal(t *testing.T) {
 			expected: datediff.ModeWeeks,
 		},
 		{
-			format:   "%w    %W", // if verb repeated both verbs will be replaced with the related values
-			expected: datediff.ModeWeeks,
-		},
-		{
 			format:   "   %D   ",
 			expected: datediff.ModeDays,
 		},
 		{
 			format:   "   %d   ",
-			expected: datediff.ModeDays,
-		},
-		{
-			format:   "%d    %D", // if verb repeated both verbs will be replaced with the related values
 			expected: datediff.ModeDays,
 		},
 		{
