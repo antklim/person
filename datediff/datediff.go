@@ -1,7 +1,5 @@
 package datediff
 
-// TODO: add documentation comments
-
 import (
 	"errors"
 	"fmt"
@@ -30,16 +28,12 @@ var errStartIsAfterEnd = errors.New("start date is after end date")
 // TODO: define behavior in case when rawFormat is an empty string. Options are:
 //	- return an error
 //	- return an empty string response and don't calculate age
-//	- declare define format and return age accordingly
+//	- declare default format and return age accordingly
 
 // %Y, %y for years
 // %M, %m for months
 // %W, %w for weeks
 // %D, %d for days
-//
-// %Y, %M, %W, and %D = 5 years, 4 months, 3 weeks, and 2 days
-// %y years and %w weeks = 5 years and 3 weeks
-// Y years and w weeks = Y years and w weeks
 
 // TODO: refactoring. dateDiffFormat can be replaced with the bit's mask
 type format struct {
@@ -99,6 +93,7 @@ func unmarshal(rawFormat string) (format, error) {
 	return result, nil
 }
 
+// Diff describes dates difference in years, months, weeks, and days.
 type Diff struct {
 	Years     int
 	Months    int
@@ -108,6 +103,27 @@ type Diff struct {
 }
 
 // NewDiff creates Diff according to the provided format.
+// Provided format should contain special "verbs" that define dates difference
+// calculattion logic. These are supported format verbs:
+//	%Y - to calculate dates difference in years
+//	%M - to calculate dates difference in months
+//	%W - to calculate dates difference in weeks
+//	%D - to calculate dates difference in days
+//
+// When format contains multiple "verbs" the date diffrence will be calculated
+// starting from longest time unit to shortest. For example:
+//
+//	start, _ := time.Parse("2006-01-02", "2000-04-17")
+//	end, _ := time.Parse("2006-01-02", "2003-03-16")
+//	diff1, _ := NewDiff(start, end, "%Y")
+//	diff2, _ := NewDiff(start, end, "%M")
+//	diff3, _ := NewDiff(start, end, "%Y %M")
+//	fmt.Println(diff1) // 2 years
+//	fmt.Println(diff2) // 34 month
+//	fmt.Println(diff3) // 2 years 10 months
+//
+// NewDiff returns error when start date is after end date or in case of invalid
+// format. Format considered invalid when it contains unsupported "verb".
 func NewDiff(start, end time.Time, rawFormat string) (Diff, error) {
 	if start.After(end) {
 		return Diff{}, errStartIsAfterEnd
@@ -149,6 +165,7 @@ func NewDiff(start, end time.Time, rawFormat string) (Diff, error) {
 	return diff, nil
 }
 
+// Equal returns true when two dates differences are equal.
 func (d Diff) Equal(other Diff) bool {
 	return d.Years == other.Years &&
 		d.Months == other.Months &&
@@ -156,10 +173,13 @@ func (d Diff) Equal(other Diff) bool {
 		d.Days == other.Days
 }
 
+// Format formats dates difference accordig to provided format.
 func (d Diff) Format(rawFormat string) string {
 	return d.format(rawFormat)
 }
 
+// String formats dates difference according to the format provided at
+// initialization of dates difference.
 func (d Diff) String() string {
 	return d.format(d.rawFormat)
 }
