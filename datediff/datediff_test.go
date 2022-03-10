@@ -107,8 +107,7 @@ func TestUnmarshal(t *testing.T) { // nolint:funlen
 		{
 			format: "   %y   ",
 			expected: datediff.Format{
-				FormatMode: datediff.FormatYearValueOnly,
-				DiffMode:   datediff.ModeYear,
+				DiffMode: datediff.ModeYear,
 			},
 		},
 		{
@@ -126,8 +125,7 @@ func TestUnmarshal(t *testing.T) { // nolint:funlen
 		{
 			format: "   %m   ",
 			expected: datediff.Format{
-				FormatMode: datediff.FormatMonthValueOnly,
-				DiffMode:   datediff.ModeMonth,
+				DiffMode: datediff.ModeMonth,
 			},
 		},
 		{
@@ -145,8 +143,7 @@ func TestUnmarshal(t *testing.T) { // nolint:funlen
 		{
 			format: "   %w   ",
 			expected: datediff.Format{
-				FormatMode: datediff.FormatWeekValueOnly,
-				DiffMode:   datediff.ModeWeek,
+				DiffMode: datediff.ModeWeek,
 			},
 		},
 		{
@@ -164,8 +161,7 @@ func TestUnmarshal(t *testing.T) { // nolint:funlen
 		{
 			format: "   %d   ",
 			expected: datediff.Format{
-				FormatMode: datediff.FormatDayValueOnly,
-				DiffMode:   datediff.ModeDay,
+				DiffMode: datediff.ModeDay,
 			},
 		},
 		{
@@ -177,29 +173,25 @@ func TestUnmarshal(t *testing.T) { // nolint:funlen
 		{
 			format: "%Y  %m%D",
 			expected: datediff.Format{
-				FormatMode: datediff.FormatMonthValueOnly,
-				DiffMode:   datediff.ModeYear | datediff.ModeMonth | datediff.ModeDay,
+				DiffMode: datediff.ModeYear | datediff.ModeMonth | datediff.ModeDay,
 			},
 		},
 		{
 			format: "  %Y%W%d",
 			expected: datediff.Format{
-				FormatMode: datediff.FormatDayValueOnly,
-				DiffMode:   datediff.ModeYear | datediff.ModeWeek | datediff.ModeDay,
+				DiffMode: datediff.ModeYear | datediff.ModeWeek | datediff.ModeDay,
 			},
 		},
 		{
 			format: " %y%M%w %D ",
 			expected: datediff.Format{
-				FormatMode: datediff.FormatYearValueOnly | datediff.FormatWeekValueOnly,
-				DiffMode:   datediff.ModeYear | datediff.ModeMonth | datediff.ModeWeek | datediff.ModeDay,
+				DiffMode: datediff.ModeYear | datediff.ModeMonth | datediff.ModeWeek | datediff.ModeDay,
 			},
 		},
 		{
 			format: "  %y%d  ",
 			expected: datediff.Format{
-				FormatMode: datediff.FormatYearValueOnly | datediff.FormatDayValueOnly,
-				DiffMode:   datediff.ModeYear | datediff.ModeDay,
+				DiffMode: datediff.ModeYear | datediff.ModeDay,
 			},
 		},
 		{

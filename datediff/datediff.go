@@ -36,8 +36,7 @@ var errStartIsAfterEnd = errors.New("start date is after end date")
 // %D, %d for days
 
 type format struct {
-	DiffMode   DiffMode
-	FormatMode FormatMode
+	DiffMode DiffMode
 }
 
 type DiffMode uint8
@@ -47,15 +46,6 @@ const (
 	ModeMonth
 	ModeWeek
 	ModeDay
-)
-
-type FormatMode uint8
-
-const (
-	FormatYearValueOnly FormatMode = 1 << iota
-	FormatMonthValueOnly
-	FormatWeekValueOnly
-	FormatDayValueOnly
 )
 
 func unmarshal(rawFormat string) (format, error) {
@@ -73,28 +63,20 @@ func unmarshal(rawFormat string) (format, error) {
 		i++
 		switch c := rawFormat[i]; c {
 		case 'Y':
-			result.FormatMode &^= FormatYearValueOnly
 			result.DiffMode |= ModeYear
 		case 'y':
-			result.FormatMode |= FormatYearValueOnly
 			result.DiffMode |= ModeYear
 		case 'M':
-			result.FormatMode &^= FormatMonthValueOnly
 			result.DiffMode |= ModeMonth
 		case 'm':
-			result.FormatMode |= FormatMonthValueOnly
 			result.DiffMode |= ModeMonth
 		case 'W':
-			result.FormatMode &^= FormatWeekValueOnly
 			result.DiffMode |= ModeWeek
 		case 'w':
-			result.FormatMode |= FormatWeekValueOnly
 			result.DiffMode |= ModeWeek
 		case 'D':
-			result.FormatMode &^= FormatDayValueOnly
 			result.DiffMode |= ModeDay
 		case 'd':
-			result.FormatMode |= FormatDayValueOnly
 			result.DiffMode |= ModeDay
 		default:
 			return format{}, fmt.Errorf("format %q has unknown verb %c", rawFormat, c)
@@ -110,9 +92,8 @@ type Diff struct {
 	Months    int
 	Weeks     int
 	Days      int
-	rawFormat string     // initial format, i.e "%Y and %M"
-	mode      DiffMode   // difference mode, i.e years and months
-	fmtMode   FormatMode // format (stringify) mode, i.e years value only
+	rawFormat string   // initial format, i.e "%Y and %M"
+	mode      DiffMode // difference mode, i.e years and months
 }
 
 // NewDiff creates Diff according to the provided format.
@@ -150,7 +131,6 @@ func NewDiff(start, end time.Time, rawFormat string) (Diff, error) {
 	diff := Diff{
 		rawFormat: rawFormat,
 		mode:      f.DiffMode,
-		fmtMode:   f.FormatMode,
 	}
 
 	if f.DiffMode&ModeYear != 0 {
