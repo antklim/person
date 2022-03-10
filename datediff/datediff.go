@@ -35,10 +35,6 @@ var errStartIsAfterEnd = errors.New("start date is after end date")
 // %W, %w for weeks
 // %D, %d for days
 
-// type DiffMode
-// type PrintMode or FormatMode
-
-// TODO: refactoring. dateDiffFormat can be replaced with the bit's mask
 type format struct {
 	YearValueOnly  bool
 	MonthValueOnly bool
@@ -52,10 +48,13 @@ type DiffMode uint8
 
 const (
 	ModeYear DiffMode = 1 << iota
-	HasMonthMask
+	ModeMonth
 	HasWeekMask
 	HasDayMask
 )
+
+// type FormatMode uint16
+
 const (
 	YearOnlyMask = 1 << iota
 	MonthsOnlyMask
@@ -85,10 +84,10 @@ func unmarshal(rawFormat string) (format, error) {
 			result.DiffMode |= ModeYear
 		case 'M':
 			result.MonthValueOnly = false
-			result.DiffMode |= HasMonthMask
+			result.DiffMode |= ModeMonth
 		case 'm':
 			result.MonthValueOnly = true
-			result.DiffMode |= HasMonthMask
+			result.DiffMode |= ModeMonth
 		case 'W':
 			result.WeekValueOnly = false
 			result.DiffMode |= HasWeekMask
@@ -157,7 +156,7 @@ func NewDiff(start, end time.Time, rawFormat string) (Diff, error) {
 		start = start.AddDate(diff.Years, 0, 0)
 	}
 
-	if f.DiffMode&HasMonthMask != 0 {
+	if f.DiffMode&ModeMonth != 0 {
 		// getting to the closest year to the end date to reduce
 		// amount of the interations during the full month calculation
 		var years int
