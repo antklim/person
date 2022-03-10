@@ -100,14 +100,12 @@ func TestUnmarshal(t *testing.T) {
 		{
 			format: "   %Y   ",
 			expected: datediff.Format{
-				HasYear:   true,
 				UnitsMask: datediff.HasYearMask,
 			},
 		},
 		{
 			format: "   %y   ",
 			expected: datediff.Format{
-				HasYear:       true,
 				YearValueOnly: true,
 				UnitsMask:     datediff.HasYearMask,
 			},
@@ -115,7 +113,6 @@ func TestUnmarshal(t *testing.T) {
 		{
 			format: "%y    %Y", // if verb repeated the latest value will be used
 			expected: datediff.Format{
-				HasYear:   true,
 				UnitsMask: datediff.HasYearMask,
 			},
 		},
@@ -137,7 +134,6 @@ func TestUnmarshal(t *testing.T) {
 		{
 			format: "%y    %Y", // if verb repeated the latest value will be used
 			expected: datediff.Format{
-				HasYear:   true,
 				UnitsMask: datediff.HasYearMask,
 			},
 		},
@@ -159,7 +155,6 @@ func TestUnmarshal(t *testing.T) {
 		{
 			format: "%y    %Y", // if verb repeated the latest value will be used
 			expected: datediff.Format{
-				HasYear:   true,
 				UnitsMask: datediff.HasYearMask,
 			},
 		},
@@ -188,7 +183,6 @@ func TestUnmarshal(t *testing.T) {
 		{
 			format: "%Y  %m%D",
 			expected: datediff.Format{
-				HasYear:  true,
 				HasMonth: true, MonthValueOnly: true,
 				HasDay:    true,
 				UnitsMask: datediff.HasYearMask | datediff.HasMonthMask | datediff.HasDayMask,
@@ -197,7 +191,6 @@ func TestUnmarshal(t *testing.T) {
 		{
 			format: "  %Y%W%d",
 			expected: datediff.Format{
-				HasYear: true,
 				HasWeek: true,
 				HasDay:  true, DayValueOnly: true,
 				UnitsMask: datediff.HasYearMask | datediff.HasWeekMask | datediff.HasDayMask,
@@ -206,9 +199,9 @@ func TestUnmarshal(t *testing.T) {
 		{
 			format: " %y%M%w %D ",
 			expected: datediff.Format{
-				HasYear: true, YearValueOnly: true,
-				HasMonth: true,
-				HasWeek:  true, WeekValueOnly: true,
+				YearValueOnly: true,
+				HasMonth:      true,
+				HasWeek:       true, WeekValueOnly: true,
 				HasDay:    true,
 				UnitsMask: datediff.HasYearMask | datediff.HasMonthMask | datediff.HasWeekMask | datediff.HasDayMask,
 			},
@@ -216,7 +209,6 @@ func TestUnmarshal(t *testing.T) {
 		{
 			format: "  %y%d  ",
 			expected: datediff.Format{
-				HasYear:       true,
 				YearValueOnly: true,
 				HasDay:        true,
 				DayValueOnly:  true,

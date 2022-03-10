@@ -37,7 +37,6 @@ var errStartIsAfterEnd = errors.New("start date is after end date")
 
 // TODO: refactoring. dateDiffFormat can be replaced with the bit's mask
 type format struct {
-	HasYear        bool
 	YearValueOnly  bool
 	HasMonth       bool
 	MonthValueOnly bool
@@ -77,11 +76,9 @@ func unmarshal(rawFormat string) (format, error) {
 		i++
 		switch c := rawFormat[i]; c {
 		case 'Y':
-			result.HasYear = true
 			result.YearValueOnly = false
 			result.UnitsMask |= HasYearMask
 		case 'y':
-			result.HasYear = true
 			result.YearValueOnly = true
 			result.UnitsMask |= HasYearMask
 		case 'M':
@@ -159,16 +156,16 @@ func NewDiff(start, end time.Time, rawFormat string) (Diff, error) {
 		return Diff{}, err
 	}
 
-	if f.HasYear {
+	if f.UnitsMask&HasYearMask != 0 {
 		diff.Years = fullYearsDiff(start, end)
 		start = start.AddDate(diff.Years, 0, 0)
 	}
 
-	if f.HasMonth {
+	if f.UnitsMask&HasMonthMask != 0 {
 		// getting to the closest year to the end date to reduce
 		// amount of the interations during the full month calculation
 		var years int
-		if !f.HasYear {
+		if f.UnitsMask&HasYearMask == 0 {
 			years = fullYearsDiff(start, end)
 		}
 		months := fullMonthsDiff(start.AddDate(years, 0, 0), end)
@@ -176,12 +173,12 @@ func NewDiff(start, end time.Time, rawFormat string) (Diff, error) {
 		start = start.AddDate(0, diff.Months, 0)
 	}
 
-	if f.HasWeek {
+	if f.UnitsMask&HasWeekMask != 0 {
 		diff.Weeks = fullWeeksDiff(start, end)
 		start = start.AddDate(0, 0, diff.Weeks*daysInWeek)
 	}
 
-	if f.HasDay {
+	if f.UnitsMask&HasDayMask != 0 {
 		diff.Days = fullDaysDiff(start, end)
 	}
 
