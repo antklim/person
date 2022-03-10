@@ -100,91 +100,91 @@ func TestUnmarshal(t *testing.T) {
 		{
 			format: "   %Y   ",
 			expected: datediff.Format{
-				UnitsMask: datediff.HasYearMask,
+				DiffMode: datediff.ModeYear,
 			},
 		},
 		{
 			format: "   %y   ",
 			expected: datediff.Format{
 				YearValueOnly: true,
-				UnitsMask:     datediff.HasYearMask,
+				DiffMode:      datediff.ModeYear,
 			},
 		},
 		{
 			format: "%y    %Y", // if verb repeated the latest value will be used
 			expected: datediff.Format{
-				UnitsMask: datediff.HasYearMask,
+				DiffMode: datediff.ModeYear,
 			},
 		},
 		{
 			format: "   %M   ",
 			expected: datediff.Format{
-				UnitsMask: datediff.HasMonthMask,
+				DiffMode: datediff.HasMonthMask,
 			},
 		},
 		{
 			format: "   %m   ",
 			expected: datediff.Format{
 				MonthValueOnly: true,
-				UnitsMask:      datediff.HasMonthMask,
+				DiffMode:       datediff.HasMonthMask,
 			},
 		},
 		{
 			format: "%y    %Y", // if verb repeated the latest value will be used
 			expected: datediff.Format{
-				UnitsMask: datediff.HasYearMask,
+				DiffMode: datediff.ModeYear,
 			},
 		},
 		{
 			format: "   %W   ",
 			expected: datediff.Format{
-				UnitsMask: datediff.HasWeekMask,
+				DiffMode: datediff.HasWeekMask,
 			},
 		},
 		{
 			format: "   %w   ",
 			expected: datediff.Format{
 				WeekValueOnly: true,
-				UnitsMask:     datediff.HasWeekMask,
+				DiffMode:      datediff.HasWeekMask,
 			},
 		},
 		{
 			format: "%y    %Y", // if verb repeated the latest value will be used
 			expected: datediff.Format{
-				UnitsMask: datediff.HasYearMask,
+				DiffMode: datediff.ModeYear,
 			},
 		},
 		{
 			format: "   %D   ",
 			expected: datediff.Format{
-				UnitsMask: datediff.HasDayMask,
+				DiffMode: datediff.HasDayMask,
 			},
 		},
 		{
 			format: "   %d   ",
 			expected: datediff.Format{
 				DayValueOnly: true,
-				UnitsMask:    datediff.HasDayMask,
+				DiffMode:     datediff.HasDayMask,
 			},
 		},
 		{
 			format: "%d    %D", // if verb repeated the latest value will be used
 			expected: datediff.Format{
-				UnitsMask: datediff.HasDayMask,
+				DiffMode: datediff.HasDayMask,
 			},
 		},
 		{
 			format: "%Y  %m%D",
 			expected: datediff.Format{
 				MonthValueOnly: true,
-				UnitsMask:      datediff.HasYearMask | datediff.HasMonthMask | datediff.HasDayMask,
+				DiffMode:       datediff.ModeYear | datediff.HasMonthMask | datediff.HasDayMask,
 			},
 		},
 		{
 			format: "  %Y%W%d",
 			expected: datediff.Format{
 				DayValueOnly: true,
-				UnitsMask:    datediff.HasYearMask | datediff.HasWeekMask | datediff.HasDayMask,
+				DiffMode:     datediff.ModeYear | datediff.HasWeekMask | datediff.HasDayMask,
 			},
 		},
 		{
@@ -192,7 +192,7 @@ func TestUnmarshal(t *testing.T) {
 			expected: datediff.Format{
 				YearValueOnly: true,
 				WeekValueOnly: true,
-				UnitsMask:     datediff.HasYearMask | datediff.HasMonthMask | datediff.HasWeekMask | datediff.HasDayMask,
+				DiffMode:      datediff.ModeYear | datediff.HasMonthMask | datediff.HasWeekMask | datediff.HasDayMask,
 			},
 		},
 		{
@@ -200,7 +200,7 @@ func TestUnmarshal(t *testing.T) {
 			expected: datediff.Format{
 				YearValueOnly: true,
 				DayValueOnly:  true,
-				UnitsMask:     datediff.HasYearMask | datediff.HasDayMask,
+				DiffMode:      datediff.ModeYear | datediff.HasDayMask,
 			},
 		},
 		{
