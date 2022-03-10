@@ -95,10 +95,10 @@ func unmarshal(rawFormat string) (format, error) {
 			result.FormatMode |= FormatWeekValueOnly
 			result.DiffMode |= ModeWeek
 		case 'D':
-			result.DayValueOnly = false
+			result.FormatMode &^= FormatDayValueOnly
 			result.DiffMode |= ModeDay
 		case 'd':
-			result.DayValueOnly = true
+			result.FormatMode |= FormatDayValueOnly
 			result.DiffMode |= ModeDay
 		default:
 			return format{}, fmt.Errorf("format %q has unknown verb %c", rawFormat, c)
