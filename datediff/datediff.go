@@ -56,10 +56,10 @@ const (
 type FormatMode uint8
 
 const (
-	ModeYearValueOnly FormatMode = 1 << iota
-	ModeMonthValueOnly
-	ModeWeekValueOnly
-	ModeDayValueOnly
+	FormatYearValueOnly FormatMode = 1 << iota
+	FormatMonthValueOnly
+	FormatWeekValueOnly
+	FormatDayValueOnly
 )
 
 func unmarshal(rawFormat string) (format, error) {
@@ -77,10 +77,10 @@ func unmarshal(rawFormat string) (format, error) {
 		i++
 		switch c := rawFormat[i]; c {
 		case 'Y':
-			result.YearValueOnly = false
+			result.FormatMode &^= FormatYearValueOnly
 			result.DiffMode |= ModeYear
 		case 'y':
-			result.YearValueOnly = true
+			result.FormatMode |= FormatYearValueOnly
 			result.DiffMode |= ModeYear
 		case 'M':
 			result.MonthValueOnly = false
