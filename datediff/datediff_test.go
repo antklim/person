@@ -157,34 +157,34 @@ func TestUnmarshal(t *testing.T) {
 		{
 			format: "   %D   ",
 			expected: datediff.Format{
-				DiffMode: datediff.HasDayMask,
+				DiffMode: datediff.ModeDay,
 			},
 		},
 		{
 			format: "   %d   ",
 			expected: datediff.Format{
 				DayValueOnly: true,
-				DiffMode:     datediff.HasDayMask,
+				DiffMode:     datediff.ModeDay,
 			},
 		},
 		{
 			format: "%d    %D", // if verb repeated the latest value will be used
 			expected: datediff.Format{
-				DiffMode: datediff.HasDayMask,
+				DiffMode: datediff.ModeDay,
 			},
 		},
 		{
 			format: "%Y  %m%D",
 			expected: datediff.Format{
 				MonthValueOnly: true,
-				DiffMode:       datediff.ModeYear | datediff.ModeMonth | datediff.HasDayMask,
+				DiffMode:       datediff.ModeYear | datediff.ModeMonth | datediff.ModeDay,
 			},
 		},
 		{
 			format: "  %Y%W%d",
 			expected: datediff.Format{
 				DayValueOnly: true,
-				DiffMode:     datediff.ModeYear | datediff.ModeWeek | datediff.HasDayMask,
+				DiffMode:     datediff.ModeYear | datediff.ModeWeek | datediff.ModeDay,
 			},
 		},
 		{
@@ -192,7 +192,7 @@ func TestUnmarshal(t *testing.T) {
 			expected: datediff.Format{
 				YearValueOnly: true,
 				WeekValueOnly: true,
-				DiffMode:      datediff.ModeYear | datediff.ModeMonth | datediff.ModeWeek | datediff.HasDayMask,
+				DiffMode:      datediff.ModeYear | datediff.ModeMonth | datediff.ModeWeek | datediff.ModeDay,
 			},
 		},
 		{
@@ -200,7 +200,7 @@ func TestUnmarshal(t *testing.T) {
 			expected: datediff.Format{
 				YearValueOnly: true,
 				DayValueOnly:  true,
-				DiffMode:      datediff.ModeYear | datediff.HasDayMask,
+				DiffMode:      datediff.ModeYear | datediff.ModeDay,
 			},
 		},
 		{

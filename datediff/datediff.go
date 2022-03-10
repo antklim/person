@@ -50,7 +50,7 @@ const (
 	ModeYear DiffMode = 1 << iota
 	ModeMonth
 	ModeWeek
-	HasDayMask
+	ModeDay
 )
 
 // type FormatMode uint16
@@ -96,10 +96,10 @@ func unmarshal(rawFormat string) (format, error) {
 			result.DiffMode |= ModeWeek
 		case 'D':
 			result.DayValueOnly = false
-			result.DiffMode |= HasDayMask
+			result.DiffMode |= ModeDay
 		case 'd':
 			result.DayValueOnly = true
-			result.DiffMode |= HasDayMask
+			result.DiffMode |= ModeDay
 		default:
 			return format{}, fmt.Errorf("format %q has unknown verb %c", rawFormat, c)
 		}
@@ -173,7 +173,7 @@ func NewDiff(start, end time.Time, rawFormat string) (Diff, error) {
 		start = start.AddDate(0, 0, diff.Weeks*daysInWeek)
 	}
 
-	if f.DiffMode&HasDayMask != 0 {
+	if f.DiffMode&ModeDay != 0 {
 		diff.Days = fullDaysDiff(start, end)
 	}
 
