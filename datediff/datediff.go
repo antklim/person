@@ -95,9 +95,11 @@ func unmarshal(rawFormat string) (format, error) {
 		case 'W':
 			result.HasWeek = true
 			result.WeekValueOnly = false
+			result.UnitsMask |= HasWeekMask
 		case 'w':
 			result.HasWeek = true
 			result.WeekValueOnly = true
+			result.UnitsMask |= HasWeekMask
 		case 'D':
 			result.HasDay = true
 			result.DayValueOnly = false
