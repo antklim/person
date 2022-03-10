@@ -42,7 +42,6 @@ var errStartIsAfterEnd = errors.New("start date is after end date")
 type format struct {
 	YearValueOnly  bool
 	MonthValueOnly bool
-	HasWeek        bool
 	WeekValueOnly  bool
 	HasDay         bool
 	DayValueOnly   bool
@@ -90,11 +89,9 @@ func unmarshal(rawFormat string) (format, error) {
 			result.MonthValueOnly = true
 			result.UnitsMask |= HasMonthMask
 		case 'W':
-			result.HasWeek = true
 			result.WeekValueOnly = false
 			result.UnitsMask |= HasWeekMask
 		case 'w':
-			result.HasWeek = true
 			result.WeekValueOnly = true
 			result.UnitsMask |= HasWeekMask
 		case 'D':
