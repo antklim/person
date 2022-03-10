@@ -58,21 +58,13 @@ func unmarshal(rawFormat string) (DiffMode, error) {
 		// process verb
 		i++
 		switch c := rawFormat[i]; c {
-		case 'Y':
+		case 'Y', 'y':
 			mode |= ModeYear
-		case 'y':
-			mode |= ModeYear
-		case 'M':
+		case 'M', 'm':
 			mode |= ModeMonth
-		case 'm':
-			mode |= ModeMonth
-		case 'W':
+		case 'W', 'w':
 			mode |= ModeWeek
-		case 'w':
-			mode |= ModeWeek
-		case 'D':
-			mode |= ModeDay
-		case 'd':
+		case 'D', 'd':
 			mode |= ModeDay
 		default:
 			return 0, fmt.Errorf("format %q has unknown verb %c", rawFormat, c)
