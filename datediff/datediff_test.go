@@ -119,14 +119,12 @@ func TestUnmarshal(t *testing.T) {
 		{
 			format: "   %M   ",
 			expected: datediff.Format{
-				HasMonth:  true,
 				UnitsMask: datediff.HasMonthMask,
 			},
 		},
 		{
 			format: "   %m   ",
 			expected: datediff.Format{
-				HasMonth:       true,
 				MonthValueOnly: true,
 				UnitsMask:      datediff.HasMonthMask,
 			},
@@ -183,9 +181,9 @@ func TestUnmarshal(t *testing.T) {
 		{
 			format: "%Y  %m%D",
 			expected: datediff.Format{
-				HasMonth: true, MonthValueOnly: true,
-				HasDay:    true,
-				UnitsMask: datediff.HasYearMask | datediff.HasMonthMask | datediff.HasDayMask,
+				MonthValueOnly: true,
+				HasDay:         true,
+				UnitsMask:      datediff.HasYearMask | datediff.HasMonthMask | datediff.HasDayMask,
 			},
 		},
 		{
@@ -200,7 +198,6 @@ func TestUnmarshal(t *testing.T) {
 			format: " %y%M%w %D ",
 			expected: datediff.Format{
 				YearValueOnly: true,
-				HasMonth:      true,
 				HasWeek:       true, WeekValueOnly: true,
 				HasDay:    true,
 				UnitsMask: datediff.HasYearMask | datediff.HasMonthMask | datediff.HasWeekMask | datediff.HasDayMask,

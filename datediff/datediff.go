@@ -35,10 +35,12 @@ var errStartIsAfterEnd = errors.New("start date is after end date")
 // %W, %w for weeks
 // %D, %d for days
 
+// type DiffMode
+// type PrintMode or FormatMode
+
 // TODO: refactoring. dateDiffFormat can be replaced with the bit's mask
 type format struct {
 	YearValueOnly  bool
-	HasMonth       bool
 	MonthValueOnly bool
 	HasWeek        bool
 	WeekValueOnly  bool
@@ -82,11 +84,9 @@ func unmarshal(rawFormat string) (format, error) {
 			result.YearValueOnly = true
 			result.UnitsMask |= HasYearMask
 		case 'M':
-			result.HasMonth = true
 			result.MonthValueOnly = false
 			result.UnitsMask |= HasMonthMask
 		case 'm':
-			result.HasMonth = true
 			result.MonthValueOnly = true
 			result.UnitsMask |= HasMonthMask
 		case 'W':
