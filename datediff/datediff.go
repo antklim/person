@@ -87,9 +87,11 @@ func unmarshal(rawFormat string) (format, error) {
 		case 'M':
 			result.HasMonth = true
 			result.MonthValueOnly = false
+			result.UnitsMask |= HasMonthMask
 		case 'm':
 			result.HasMonth = true
 			result.MonthValueOnly = true
+			result.UnitsMask |= HasMonthMask
 		case 'W':
 			result.HasWeek = true
 			result.WeekValueOnly = false
