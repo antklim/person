@@ -45,7 +45,22 @@ type format struct {
 	WeekValueOnly  bool
 	HasDay         bool
 	DayValueOnly   bool
+	UnitsMask      uint8
+	ValueOnlyMask  uint8
 }
+
+const (
+	HasYearMask = 1 << iota
+	HasMonthMask
+	HasWeekMask
+	HasDayMask
+)
+const (
+	YearOnlyMask = 1 << iota
+	MonthsOnlyMask
+	WeekOnlyMask
+	DayOnlyMask
+)
 
 func unmarshal(rawFormat string) (format, error) {
 	result := format{}
@@ -64,9 +79,11 @@ func unmarshal(rawFormat string) (format, error) {
 		case 'Y':
 			result.HasYear = true
 			result.YearValueOnly = false
+			result.UnitsMask |= HasYearMask
 		case 'y':
 			result.HasYear = true
 			result.YearValueOnly = true
+			result.UnitsMask |= HasYearMask
 		case 'M':
 			result.HasMonth = true
 			result.MonthValueOnly = false
