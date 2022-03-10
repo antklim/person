@@ -41,7 +41,7 @@ type format struct {
 	WeekValueOnly  bool
 	DayValueOnly   bool
 	DiffMode       DiffMode
-	ValueOnlyMask  uint8
+	FormatMode     FormatMode
 }
 
 type DiffMode uint8
@@ -53,13 +53,13 @@ const (
 	ModeDay
 )
 
-// type FormatMode uint16
+type FormatMode uint8
 
 const (
-	YearOnlyMask = 1 << iota
-	MonthsOnlyMask
-	WeekOnlyMask
-	DayOnlyMask
+	ModeYearValueOnly FormatMode = 1 << iota
+	ModeMonthValueOnly
+	ModeWeekValueOnly
+	ModeDayValueOnly
 )
 
 func unmarshal(rawFormat string) (format, error) {
