@@ -282,13 +282,31 @@ func TestFormatFails(t *testing.T) {
 		t.Errorf("NewDiff(%s, %s, %s) failed: %v",
 			start.Format(dateFmt), end.Format(dateFmt), format, err)
 	}
-	format = "%Z"
-	expected := `format "%Z" has unknown verb Z`
 
-	got, err := diff.Format(format)
-	if err == nil {
-		t.Errorf("Format(%s) = %v, want to fail due to %s", format, got, expected)
-	} else if err.Error() != expected {
-		t.Errorf("Format(%s) failed: %v, want to fail due to %s", format, err, expected)
+	testCases := []struct {
+		format   string
+		expected string
+	}{
+		{
+			format:   "%Z",
+			expected: `format "%Z" has unknown verb Z`,
+		},
+		{
+			format:   "   ",
+			expected: "undefined dates difference mode",
+		},
+		{
+			format:   "Years and months",
+			expected: "undefined dates difference mode",
+		},
+	}
+
+	for _, tC := range testCases {
+		got, err := diff.Format(tC.format)
+		if err == nil {
+			t.Errorf("Format(%s) = %v, want to fail due to %s", tC.format, got, tC.expected)
+		} else if err.Error() != tC.expected {
+			t.Errorf("Format(%s) failed: %v, want to fail due to %s", tC.format, err, tC.expected)
+		}
 	}
 }
