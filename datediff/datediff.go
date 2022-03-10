@@ -30,25 +30,17 @@ var errStartIsAfterEnd = errors.New("start date is after end date")
 //	- return an empty string response and don't calculate age
 //	- declare default format and return age accordingly
 
-// %Y, %y for years
-// %M, %m for months
-// %W, %w for weeks
-// %D, %d for days
+type DiffMode uint8
 
-// TODO: refactoring. dateDiffFormat can be replaced with the bit's mask
-type format struct {
-	HasYear        bool
-	YearValueOnly  bool
-	HasMonth       bool
-	MonthValueOnly bool
-	HasWeek        bool
-	WeekValueOnly  bool
-	HasDay         bool
-	DayValueOnly   bool
-}
+const (
+	ModeYears DiffMode = 1 << (8 - 1 - iota)
+	ModeMonths
+	ModeWeeks
+	ModeDays
+)
 
-func unmarshal(rawFormat string) (format, error) {
-	result := format{}
+func unmarshal(rawFormat string) (DiffMode, error) {
+	var mode DiffMode
 	end := len(rawFormat)
 	for i := 0; i < end; {
 		for i < end && rawFormat[i] != '%' {
@@ -61,36 +53,20 @@ func unmarshal(rawFormat string) (format, error) {
 		// process verb
 		i++
 		switch c := rawFormat[i]; c {
-		case 'Y':
-			result.HasYear = true
-			result.YearValueOnly = false
-		case 'y':
-			result.HasYear = true
-			result.YearValueOnly = true
-		case 'M':
-			result.HasMonth = true
-			result.MonthValueOnly = false
-		case 'm':
-			result.HasMonth = true
-			result.MonthValueOnly = true
-		case 'W':
-			result.HasWeek = true
-			result.WeekValueOnly = false
-		case 'w':
-			result.HasWeek = true
-			result.WeekValueOnly = true
-		case 'D':
-			result.HasDay = true
-			result.DayValueOnly = false
-		case 'd':
-			result.HasDay = true
-			result.DayValueOnly = true
+		case 'Y', 'y':
+			mode |= ModeYears
+		case 'M', 'm':
+			mode |= ModeMonths
+		case 'W', 'w':
+			mode |= ModeWeeks
+		case 'D', 'd':
+			mode |= ModeDays
 		default:
-			return format{}, fmt.Errorf("format %q has unknown verb %c", rawFormat, c)
+			return 0, fmt.Errorf("format %q has unknown verb %c", rawFormat, c)
 		}
 	}
 
-	return result, nil
+	return mode, nil
 }
 
 // Diff describes dates difference in years, months, weeks, and days.
@@ -99,7 +75,7 @@ type Diff struct {
 	Months    int
 	Weeks     int
 	Days      int
-	rawFormat string
+	rawFormat string // initial format, i.e "%Y and %M"
 }
 
 // NewDiff creates Diff according to the provided format.
@@ -129,23 +105,23 @@ func NewDiff(start, end time.Time, rawFormat string) (Diff, error) {
 		return Diff{}, errStartIsAfterEnd
 	}
 
-	diff := Diff{rawFormat: rawFormat}
-
-	f, err := unmarshal(rawFormat)
+	mode, err := unmarshal(rawFormat)
 	if err != nil {
 		return Diff{}, err
 	}
 
-	if f.HasYear {
+	diff := Diff{rawFormat: rawFormat}
+
+	if mode&ModeYears != 0 {
 		diff.Years = fullYearsDiff(start, end)
 		start = start.AddDate(diff.Years, 0, 0)
 	}
 
-	if f.HasMonth {
+	if mode&ModeMonths != 0 {
 		// getting to the closest year to the end date to reduce
 		// amount of the interations during the full month calculation
 		var years int
-		if !f.HasYear {
+		if mode&ModeYears == 0 {
 			years = fullYearsDiff(start, end)
 		}
 		months := fullMonthsDiff(start.AddDate(years, 0, 0), end)
@@ -153,12 +129,12 @@ func NewDiff(start, end time.Time, rawFormat string) (Diff, error) {
 		start = start.AddDate(0, diff.Months, 0)
 	}
 
-	if f.HasWeek {
+	if mode&ModeWeeks != 0 {
 		diff.Weeks = fullWeeksDiff(start, end)
 		start = start.AddDate(0, 0, diff.Weeks*daysInWeek)
 	}
 
-	if f.HasDay {
+	if mode&ModeDays != 0 {
 		diff.Days = fullDaysDiff(start, end)
 	}
 
@@ -174,17 +150,21 @@ func (d Diff) Equal(other Diff) bool {
 }
 
 // Format formats dates difference accordig to provided format.
-func (d Diff) Format(rawFormat string) string {
-	return d.format(rawFormat)
+func (d Diff) Format(rawFormat string) (string, error) {
+	_, err := unmarshal(rawFormat)
+	if err != nil {
+		return "", err
+	}
+	return format(d, rawFormat), nil
 }
 
 // String formats dates difference according to the format provided at
 // initialization of dates difference.
 func (d Diff) String() string {
-	return d.format(d.rawFormat)
+	return format(d, d.rawFormat)
 }
 
-func (d Diff) format(rawFormat string) string {
+func format(diff Diff, rawFormat string) string {
 	result := rawFormat
 
 	// TODO: properly format lower case verbs %y, %m,...
@@ -195,13 +175,13 @@ func (d Diff) format(rawFormat string) string {
 			var n int
 			switch unit {
 			case "year":
-				n = d.Years
+				n = diff.Years
 			case "month":
-				n = d.Months
+				n = diff.Months
 			case "week":
-				n = d.Weeks
+				n = diff.Weeks
 			case "day":
-				n = d.Days
+				n = diff.Days
 			}
 			result = strings.ReplaceAll(result, verb, formatNoun(n, unit))
 		}

@@ -95,88 +95,59 @@ func loadDatediffRecordsForTest() ([]datediffRecord, error) {
 func TestUnmarshal(t *testing.T) {
 	testCases := []struct {
 		format   string
-		expected datediff.Format
+		expected datediff.DiffMode
 	}{
 		{
 			format:   "   %Y   ",
-			expected: datediff.Format{HasYear: true},
+			expected: datediff.ModeYears,
 		},
 		{
 			format:   "   %y   ",
-			expected: datediff.Format{HasYear: true, YearValueOnly: true},
-		},
-		{
-			format:   "%y    %Y", // if verb repeated the latest value will be used
-			expected: datediff.Format{HasYear: true},
+			expected: datediff.ModeYears,
 		},
 		{
 			format:   "   %M   ",
-			expected: datediff.Format{HasMonth: true},
+			expected: datediff.ModeMonths,
 		},
 		{
 			format:   "   %m   ",
-			expected: datediff.Format{HasMonth: true, MonthValueOnly: true},
-		},
-		{
-			format:   "%y    %Y", // if verb repeated the latest value will be used
-			expected: datediff.Format{HasYear: true},
+			expected: datediff.ModeMonths,
 		},
 		{
 			format:   "   %W   ",
-			expected: datediff.Format{HasWeek: true},
+			expected: datediff.ModeWeeks,
 		},
 		{
 			format:   "   %w   ",
-			expected: datediff.Format{HasWeek: true, WeekValueOnly: true},
-		},
-		{
-			format:   "%y    %Y", // if verb repeated the latest value will be used
-			expected: datediff.Format{HasYear: true},
+			expected: datediff.ModeWeeks,
 		},
 		{
 			format:   "   %D   ",
-			expected: datediff.Format{HasDay: true},
+			expected: datediff.ModeDays,
 		},
 		{
 			format:   "   %d   ",
-			expected: datediff.Format{HasDay: true, DayValueOnly: true},
+			expected: datediff.ModeDays,
 		},
 		{
-			format:   "%d    %D", // if verb repeated the latest value will be used
-			expected: datediff.Format{HasDay: true},
+			format:   "%Y  %m%D",
+			expected: datediff.ModeYears | datediff.ModeMonths | datediff.ModeDays,
 		},
 		{
-			format: "%Y  %m%D",
-			expected: datediff.Format{
-				HasYear:  true,
-				HasMonth: true, MonthValueOnly: true,
-				HasDay: true,
-			},
+			format:   "  %Y%W%d",
+			expected: datediff.ModeYears | datediff.ModeWeeks | datediff.ModeDays,
 		},
 		{
-			format: "  %Y%W%d",
-			expected: datediff.Format{
-				HasYear: true,
-				HasWeek: true,
-				HasDay:  true, DayValueOnly: true,
-			},
-		},
-		{
-			format: " %y%M%w %D ",
-			expected: datediff.Format{
-				HasYear: true, YearValueOnly: true,
-				HasMonth: true,
-				HasWeek:  true, WeekValueOnly: true,
-				HasDay: true,
-			},
+			format:   " %y%M%w %D ",
+			expected: datediff.ModeYears | datediff.ModeMonths | datediff.ModeWeeks | datediff.ModeDays,
 		},
 		{
 			format:   "  %y%d  ",
-			expected: datediff.Format{HasYear: true, YearValueOnly: true, HasDay: true, DayValueOnly: true},
+			expected: datediff.ModeYears | datediff.ModeDays,
 		},
 		{
 			format:   "X",
-			expected: datediff.Format{},
+			expected: 0,
 		},
 	}
 	for _, tC := range testCases {
@@ -195,7 +166,7 @@ func TestUnmarshalFails(t *testing.T) {
 
 	got, err := datediff.Unmarshal(format)
 	if err == nil {
-		t.Fatalf("Unmarshal(%s) = %v, want to fail due to %s", format, got, expected)
+		t.Errorf("Unmarshal(%s) = %v, want to fail due to %s", format, got, expected)
 	} else if err.Error() != expected {
 		t.Errorf("Unmarshal(%s) failed: %v, want to fail due to %s", format, err, expected)
 	}
@@ -243,7 +214,7 @@ func TestNewDiffFails(t *testing.T) {
 	for _, tC := range testCases {
 		got, err := datediff.NewDiff(tC.start, tC.end, tC.format)
 		if err == nil {
-			t.Fatalf("NewDiff(%s, %s, %s) = %v, want to fail due to %s",
+			t.Errorf("NewDiff(%s, %s, %s) = %v, want to fail due to %s",
 				tC.start.Format(dateFmt), tC.end.Format(dateFmt), tC.format, got, tC.err)
 		} else if err.Error() != tC.err {
 			t.Errorf("NewDiff(%s, %s, %s) failed: %v, want to fail due to %s",
@@ -283,9 +254,31 @@ func TestFormat(t *testing.T) {
 			start.Format(dateFmt), end.Format(dateFmt), format, err)
 	}
 	format = "%Y"
-	got := diff.Format(format)
 	expected := "2 years"
-	if got != expected {
+	got, err := diff.Format(format)
+	if err != nil {
+		t.Errorf("Format(%s) failed: %v", format, err)
+	} else if got != expected {
 		t.Errorf("Format(%s) = %s, want %s", format, got, expected)
+	}
+}
+
+func TestFormatFails(t *testing.T) {
+	start := time.Date(2000, time.April, 17, 0, 0, 0, 0, time.UTC)
+	end := start.AddDate(3, -1, -1)
+	format := "%Y, %M, %W and %D"
+	diff, err := datediff.NewDiff(start, end, format)
+	if err != nil {
+		t.Errorf("NewDiff(%s, %s, %s) failed: %v",
+			start.Format(dateFmt), end.Format(dateFmt), format, err)
+	}
+	format = "%Z"
+	expected := `format "%Z" has unknown verb Z`
+
+	got, err := diff.Format(format)
+	if err == nil {
+		t.Errorf("Format(%s) = %v, want to fail due to %s", format, got, expected)
+	} else if err.Error() != expected {
+		t.Errorf("Format(%s) failed: %v, want to fail due to %s", format, err, expected)
 	}
 }
