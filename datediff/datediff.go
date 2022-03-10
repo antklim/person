@@ -110,7 +110,9 @@ type Diff struct {
 	Months    int
 	Weeks     int
 	Days      int
-	rawFormat string
+	rawFormat string     // initial format, i.e "%Y and %M"
+	mode      DiffMode   // difference mode, i.e years and months
+	fmtMode   FormatMode // format (stringify) mode, i.e years value only
 }
 
 // NewDiff creates Diff according to the provided format.
@@ -140,11 +142,15 @@ func NewDiff(start, end time.Time, rawFormat string) (Diff, error) {
 		return Diff{}, errStartIsAfterEnd
 	}
 
-	diff := Diff{rawFormat: rawFormat}
-
 	f, err := unmarshal(rawFormat)
 	if err != nil {
 		return Diff{}, err
+	}
+
+	diff := Diff{
+		rawFormat: rawFormat,
+		mode:      f.DiffMode,
+		fmtMode:   f.FormatMode,
 	}
 
 	if f.DiffMode&ModeYear != 0 {
