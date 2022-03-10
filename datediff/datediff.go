@@ -191,8 +191,12 @@ func (d Diff) Equal(other Diff) bool {
 }
 
 // Format formats dates difference accordig to provided format.
-func (d Diff) Format(rawFormat string) string {
-	return d.format(rawFormat)
+func (d Diff) Format(rawFormat string) (string, error) {
+	_, err := unmarshal(rawFormat)
+	if err != nil {
+		return "", err
+	}
+	return d.format(rawFormat), nil
 }
 
 // String formats dates difference according to the format provided at

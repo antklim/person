@@ -50,7 +50,7 @@ func ageOn(dob, date time.Time, rawFormat string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return d.Format(rawFormat), nil
+	return d.String(), nil
 }
 
 // func isAdultOn(dob, date time.Time, adultAge int) bool {
