@@ -96,107 +96,75 @@ func loadDatediffRecordsForTest() ([]datediffRecord, error) {
 func TestUnmarshal(t *testing.T) { // nolint:funlen
 	testCases := []struct {
 		format   string
-		expected datediff.Format
+		expected datediff.DiffMode
 	}{
 		{
-			format: "   %Y   ",
-			expected: datediff.Format{
-				DiffMode: datediff.ModeYear,
-			},
+			format:   "   %Y   ",
+			expected: datediff.ModeYear,
 		},
 		{
-			format: "   %y   ",
-			expected: datediff.Format{
-				DiffMode: datediff.ModeYear,
-			},
+			format:   "   %y   ",
+			expected: datediff.ModeYear,
 		},
 		{
-			format: "%y    %Y", // if verb repeated the latest value will be used
-			expected: datediff.Format{
-				DiffMode: datediff.ModeYear,
-			},
+			format:   "%y    %Y", // if verb repeated both verbs will be replaced with the related values
+			expected: datediff.ModeYear,
 		},
 		{
-			format: "   %M   ",
-			expected: datediff.Format{
-				DiffMode: datediff.ModeMonth,
-			},
+			format:   "   %M   ",
+			expected: datediff.ModeMonth,
 		},
 		{
-			format: "   %m   ",
-			expected: datediff.Format{
-				DiffMode: datediff.ModeMonth,
-			},
+			format:   "   %m   ",
+			expected: datediff.ModeMonth,
 		},
 		{
-			format: "%y    %Y", // if verb repeated the latest value will be used
-			expected: datediff.Format{
-				DiffMode: datediff.ModeYear,
-			},
+			format:   "%m    %M", // if verb repeated both verbs will be replaced with the related values
+			expected: datediff.ModeMonth,
 		},
 		{
-			format: "   %W   ",
-			expected: datediff.Format{
-				DiffMode: datediff.ModeWeek,
-			},
+			format:   "   %W   ",
+			expected: datediff.ModeWeek,
 		},
 		{
-			format: "   %w   ",
-			expected: datediff.Format{
-				DiffMode: datediff.ModeWeek,
-			},
+			format:   "   %w   ",
+			expected: datediff.ModeWeek,
 		},
 		{
-			format: "%y    %Y", // if verb repeated the latest value will be used
-			expected: datediff.Format{
-				DiffMode: datediff.ModeYear,
-			},
+			format:   "%w    %W", // if verb repeated both verbs will be replaced with the related values
+			expected: datediff.ModeWeek,
 		},
 		{
-			format: "   %D   ",
-			expected: datediff.Format{
-				DiffMode: datediff.ModeDay,
-			},
+			format:   "   %D   ",
+			expected: datediff.ModeDay,
 		},
 		{
-			format: "   %d   ",
-			expected: datediff.Format{
-				DiffMode: datediff.ModeDay,
-			},
+			format:   "   %d   ",
+			expected: datediff.ModeDay,
 		},
 		{
-			format: "%d    %D", // if verb repeated the latest value will be used
-			expected: datediff.Format{
-				DiffMode: datediff.ModeDay,
-			},
+			format:   "%d    %D", // if verb repeated both verbs will be replaced with the related values
+			expected: datediff.ModeDay,
 		},
 		{
-			format: "%Y  %m%D",
-			expected: datediff.Format{
-				DiffMode: datediff.ModeYear | datediff.ModeMonth | datediff.ModeDay,
-			},
+			format:   "%Y  %m%D",
+			expected: datediff.ModeYear | datediff.ModeMonth | datediff.ModeDay,
 		},
 		{
-			format: "  %Y%W%d",
-			expected: datediff.Format{
-				DiffMode: datediff.ModeYear | datediff.ModeWeek | datediff.ModeDay,
-			},
+			format:   "  %Y%W%d",
+			expected: datediff.ModeYear | datediff.ModeWeek | datediff.ModeDay,
 		},
 		{
-			format: " %y%M%w %D ",
-			expected: datediff.Format{
-				DiffMode: datediff.ModeYear | datediff.ModeMonth | datediff.ModeWeek | datediff.ModeDay,
-			},
+			format:   " %y%M%w %D ",
+			expected: datediff.ModeYear | datediff.ModeMonth | datediff.ModeWeek | datediff.ModeDay,
 		},
 		{
-			format: "  %y%d  ",
-			expected: datediff.Format{
-				DiffMode: datediff.ModeYear | datediff.ModeDay,
-			},
+			format:   "  %y%d  ",
+			expected: datediff.ModeYear | datediff.ModeDay,
 		},
 		{
 			format:   "X",
-			expected: datediff.Format{},
+			expected: 0,
 		},
 	}
 	for _, tC := range testCases {

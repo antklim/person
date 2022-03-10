@@ -48,8 +48,8 @@ const (
 	ModeDay
 )
 
-func unmarshal(rawFormat string) (format, error) {
-	result := format{}
+func unmarshal(rawFormat string) (DiffMode, error) {
+	var mode DiffMode
 	end := len(rawFormat)
 	for i := 0; i < end; {
 		for i < end && rawFormat[i] != '%' {
@@ -63,27 +63,27 @@ func unmarshal(rawFormat string) (format, error) {
 		i++
 		switch c := rawFormat[i]; c {
 		case 'Y':
-			result.DiffMode |= ModeYear
+			mode |= ModeYear
 		case 'y':
-			result.DiffMode |= ModeYear
+			mode |= ModeYear
 		case 'M':
-			result.DiffMode |= ModeMonth
+			mode |= ModeMonth
 		case 'm':
-			result.DiffMode |= ModeMonth
+			mode |= ModeMonth
 		case 'W':
-			result.DiffMode |= ModeWeek
+			mode |= ModeWeek
 		case 'w':
-			result.DiffMode |= ModeWeek
+			mode |= ModeWeek
 		case 'D':
-			result.DiffMode |= ModeDay
+			mode |= ModeDay
 		case 'd':
-			result.DiffMode |= ModeDay
+			mode |= ModeDay
 		default:
-			return format{}, fmt.Errorf("format %q has unknown verb %c", rawFormat, c)
+			return 0, fmt.Errorf("format %q has unknown verb %c", rawFormat, c)
 		}
 	}
 
-	return result, nil
+	return mode, nil
 }
 
 // Diff describes dates difference in years, months, weeks, and days.
@@ -123,26 +123,26 @@ func NewDiff(start, end time.Time, rawFormat string) (Diff, error) {
 		return Diff{}, errStartIsAfterEnd
 	}
 
-	f, err := unmarshal(rawFormat)
+	mode, err := unmarshal(rawFormat)
 	if err != nil {
 		return Diff{}, err
 	}
 
 	diff := Diff{
 		rawFormat: rawFormat,
-		mode:      f.DiffMode,
+		mode:      mode,
 	}
 
-	if f.DiffMode&ModeYear != 0 {
+	if mode&ModeYear != 0 {
 		diff.Years = fullYearsDiff(start, end)
 		start = start.AddDate(diff.Years, 0, 0)
 	}
 
-	if f.DiffMode&ModeMonth != 0 {
+	if mode&ModeMonth != 0 {
 		// getting to the closest year to the end date to reduce
 		// amount of the interations during the full month calculation
 		var years int
-		if f.DiffMode&ModeYear == 0 {
+		if mode&ModeYear == 0 {
 			years = fullYearsDiff(start, end)
 		}
 		months := fullMonthsDiff(start.AddDate(years, 0, 0), end)
@@ -150,12 +150,12 @@ func NewDiff(start, end time.Time, rawFormat string) (Diff, error) {
 		start = start.AddDate(0, diff.Months, 0)
 	}
 
-	if f.DiffMode&ModeWeek != 0 {
+	if mode&ModeWeek != 0 {
 		diff.Weeks = fullWeeksDiff(start, end)
 		start = start.AddDate(0, 0, diff.Weeks*daysInWeek)
 	}
 
-	if f.DiffMode&ModeDay != 0 {
+	if mode&ModeDay != 0 {
 		diff.Days = fullDaysDiff(start, end)
 	}
 
