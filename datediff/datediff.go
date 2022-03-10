@@ -35,10 +35,6 @@ var errStartIsAfterEnd = errors.New("start date is after end date")
 // %W, %w for weeks
 // %D, %d for days
 
-type format struct {
-	DiffMode DiffMode
-}
-
 type DiffMode uint8
 
 const (
@@ -176,16 +172,16 @@ func (d Diff) Format(rawFormat string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return d.format(rawFormat), nil
+	return format(d, rawFormat), nil
 }
 
 // String formats dates difference according to the format provided at
 // initialization of dates difference.
 func (d Diff) String() string {
-	return d.format(d.rawFormat)
+	return format(d, d.rawFormat)
 }
 
-func (d Diff) format(rawFormat string) string {
+func format(diff Diff, rawFormat string) string {
 	result := rawFormat
 
 	// TODO: properly format lower case verbs %y, %m,...
@@ -196,13 +192,13 @@ func (d Diff) format(rawFormat string) string {
 			var n int
 			switch unit {
 			case "year":
-				n = d.Years
+				n = diff.Years
 			case "month":
-				n = d.Months
+				n = diff.Months
 			case "week":
-				n = d.Weeks
+				n = diff.Weeks
 			case "day":
-				n = d.Days
+				n = diff.Days
 			}
 			result = strings.ReplaceAll(result, verb, formatNoun(n, unit))
 		}
