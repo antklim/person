@@ -30,11 +30,6 @@ var errStartIsAfterEnd = errors.New("start date is after end date")
 //	- return an empty string response and don't calculate age
 //	- declare default format and return age accordingly
 
-// %Y, %y for years
-// %M, %m for months
-// %W, %w for weeks
-// %D, %d for days
-
 type DiffMode uint8
 
 const (
