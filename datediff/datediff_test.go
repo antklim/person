@@ -138,14 +138,14 @@ func TestUnmarshal(t *testing.T) {
 		{
 			format: "   %W   ",
 			expected: datediff.Format{
-				DiffMode: datediff.HasWeekMask,
+				DiffMode: datediff.ModeWeek,
 			},
 		},
 		{
 			format: "   %w   ",
 			expected: datediff.Format{
 				WeekValueOnly: true,
-				DiffMode:      datediff.HasWeekMask,
+				DiffMode:      datediff.ModeWeek,
 			},
 		},
 		{
@@ -184,7 +184,7 @@ func TestUnmarshal(t *testing.T) {
 			format: "  %Y%W%d",
 			expected: datediff.Format{
 				DayValueOnly: true,
-				DiffMode:     datediff.ModeYear | datediff.HasWeekMask | datediff.HasDayMask,
+				DiffMode:     datediff.ModeYear | datediff.ModeWeek | datediff.HasDayMask,
 			},
 		},
 		{
@@ -192,7 +192,7 @@ func TestUnmarshal(t *testing.T) {
 			expected: datediff.Format{
 				YearValueOnly: true,
 				WeekValueOnly: true,
-				DiffMode:      datediff.ModeYear | datediff.ModeMonth | datediff.HasWeekMask | datediff.HasDayMask,
+				DiffMode:      datediff.ModeYear | datediff.ModeMonth | datediff.ModeWeek | datediff.HasDayMask,
 			},
 		},
 		{

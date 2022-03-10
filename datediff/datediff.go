@@ -49,7 +49,7 @@ type DiffMode uint8
 const (
 	ModeYear DiffMode = 1 << iota
 	ModeMonth
-	HasWeekMask
+	ModeWeek
 	HasDayMask
 )
 
@@ -90,10 +90,10 @@ func unmarshal(rawFormat string) (format, error) {
 			result.DiffMode |= ModeMonth
 		case 'W':
 			result.WeekValueOnly = false
-			result.DiffMode |= HasWeekMask
+			result.DiffMode |= ModeWeek
 		case 'w':
 			result.WeekValueOnly = true
-			result.DiffMode |= HasWeekMask
+			result.DiffMode |= ModeWeek
 		case 'D':
 			result.DayValueOnly = false
 			result.DiffMode |= HasDayMask
@@ -168,7 +168,7 @@ func NewDiff(start, end time.Time, rawFormat string) (Diff, error) {
 		start = start.AddDate(0, diff.Months, 0)
 	}
 
-	if f.DiffMode&HasWeekMask != 0 {
+	if f.DiffMode&ModeWeek != 0 {
 		diff.Weeks = fullWeeksDiff(start, end)
 		start = start.AddDate(0, 0, diff.Weeks*daysInWeek)
 	}
