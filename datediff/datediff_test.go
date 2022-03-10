@@ -209,6 +209,18 @@ func TestNewDiffFails(t *testing.T) {
 			format: " %Z m",
 			err:    `format " %Z m" has unknown verb Z`,
 		},
+		{
+			start:  time.Now(),
+			end:    time.Now().Add(time.Hour),
+			format: "   ",
+			err:    "undefined dates difference mode",
+		},
+		{
+			start:  time.Now(),
+			end:    time.Now().Add(time.Hour),
+			format: "Years and months",
+			err:    "undefined dates difference mode",
+		},
 	}
 
 	for _, tC := range testCases {

@@ -23,12 +23,10 @@ var formatUnits = map[string]string{
 	"%d": "day",
 }
 
-var errStartIsAfterEnd = errors.New("start date is after end date")
-
-// TODO: define behavior in case when rawFormat is an empty string. Options are:
-//	- return an error
-//	- return an empty string response and don't calculate age
-//	- declare default format and return age accordingly
+var (
+	errStartIsAfterEnd   = errors.New("start date is after end date")
+	errUndefinedDiffMode = errors.New("undefined dates difference mode")
+)
 
 type DiffMode uint8
 
@@ -98,8 +96,10 @@ type Diff struct {
 //	fmt.Println(diff2) // 34 month
 //	fmt.Println(diff3) // 2 years 10 months
 //
-// NewDiff returns error when start date is after end date or in case of invalid
-// format. Format considered invalid when it contains unsupported "verb".
+// NewDiff returns error in the following cases:
+//	start date is after end date
+//	format contains unsupported "verb"
+//	undefined dates difference mode (it happens when the format does not contain any of the supported "verbs")
 func NewDiff(start, end time.Time, rawFormat string) (Diff, error) {
 	if start.After(end) {
 		return Diff{}, errStartIsAfterEnd
@@ -108,6 +108,9 @@ func NewDiff(start, end time.Time, rawFormat string) (Diff, error) {
 	mode, err := unmarshal(rawFormat)
 	if err != nil {
 		return Diff{}, err
+	}
+	if mode == 0 {
+		return Diff{}, errUndefinedDiffMode
 	}
 
 	diff := Diff{rawFormat: rawFormat}
