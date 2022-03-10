@@ -93,7 +93,7 @@ func loadDatediffRecordsForTest() ([]datediffRecord, error) {
 }
 
 // TODO: use testdata
-func TestUnmarshal(t *testing.T) { // nolint:funlen
+func TestUnmarshal(t *testing.T) {
 	testCases := []struct {
 		format   string
 		expected datediff.DiffMode

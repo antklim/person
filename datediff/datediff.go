@@ -42,7 +42,7 @@ type format struct {
 type DiffMode uint8
 
 const (
-	ModeYear DiffMode = 1 << iota
+	ModeYear DiffMode = 1 << (8 - 1 - iota)
 	ModeMonth
 	ModeWeek
 	ModeDay
