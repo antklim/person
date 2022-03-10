@@ -43,7 +43,6 @@ type format struct {
 	YearValueOnly  bool
 	MonthValueOnly bool
 	WeekValueOnly  bool
-	HasDay         bool
 	DayValueOnly   bool
 	UnitsMask      uint8
 	ValueOnlyMask  uint8
@@ -95,11 +94,9 @@ func unmarshal(rawFormat string) (format, error) {
 			result.WeekValueOnly = true
 			result.UnitsMask |= HasWeekMask
 		case 'D':
-			result.HasDay = true
 			result.DayValueOnly = false
 			result.UnitsMask |= HasDayMask
 		case 'd':
-			result.HasDay = true
 			result.DayValueOnly = true
 			result.UnitsMask |= HasDayMask
 		default:
