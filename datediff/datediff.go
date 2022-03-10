@@ -83,10 +83,10 @@ func unmarshal(rawFormat string) (format, error) {
 			result.FormatMode |= FormatYearValueOnly
 			result.DiffMode |= ModeYear
 		case 'M':
-			result.MonthValueOnly = false
+			result.FormatMode &^= FormatMonthValueOnly
 			result.DiffMode |= ModeMonth
 		case 'm':
-			result.MonthValueOnly = true
+			result.FormatMode |= FormatMonthValueOnly
 			result.DiffMode |= ModeMonth
 		case 'W':
 			result.WeekValueOnly = false

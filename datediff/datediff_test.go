@@ -125,8 +125,8 @@ func TestUnmarshal(t *testing.T) {
 		{
 			format: "   %m   ",
 			expected: datediff.Format{
-				MonthValueOnly: true,
-				DiffMode:       datediff.ModeMonth,
+				FormatMode: datediff.FormatMonthValueOnly,
+				DiffMode:   datediff.ModeMonth,
 			},
 		},
 		{
@@ -176,8 +176,8 @@ func TestUnmarshal(t *testing.T) {
 		{
 			format: "%Y  %m%D",
 			expected: datediff.Format{
-				MonthValueOnly: true,
-				DiffMode:       datediff.ModeYear | datediff.ModeMonth | datediff.ModeDay,
+				FormatMode: datediff.FormatMonthValueOnly,
+				DiffMode:   datediff.ModeYear | datediff.ModeMonth | datediff.ModeDay,
 			},
 		},
 		{
