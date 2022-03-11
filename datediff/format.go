@@ -20,8 +20,14 @@ var formatUnits = map[string]string{
 }
 
 // format formats dates difference according to the provided format.
+// It trims time units with 0 values.
+func format(diff Diff, rawFormat string) string { // nolint
+	return ""
+}
+
+// format formats dates difference according to the provided format.
 // Since this function is private, it's assumed that format is valid.
-func format(diff Diff, rawFormat string) string {
+func formatWithZeros(diff Diff, rawFormat string) string {
 	result := rawFormat
 
 	// TODO: add feature to trim verb when unit value is 0

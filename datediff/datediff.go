@@ -149,11 +149,11 @@ func (d Diff) Format(rawFormat string) (string, error) {
 	if mode == 0 {
 		return "", errUndefinedDiffMode
 	}
-	return format(d, rawFormat), nil
+	return formatWithZeros(d, rawFormat), nil
 }
 
 // String formats dates difference according to the format provided at
 // initialization of dates difference.
 func (d Diff) String() string {
-	return format(d, d.rawFormat)
+	return formatWithZeros(d, d.rawFormat)
 }

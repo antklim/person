@@ -21,7 +21,8 @@ const (
 	monthsFld
 	weeksFld
 	daysFld
-	printFld
+	printFld // nolint
+	printWzerosFld
 )
 
 type datediffRecord struct {
@@ -63,7 +64,7 @@ func loadDatediffRecord(r []string) (datediffRecord, error) {
 		end:    end,
 		format: r[formatFld],
 		diff:   datediff.Diff{Years: years, Months: months, Weeks: weeks, Days: days},
-		print:  r[printFld],
+		print:  r[printWzerosFld],
 	}, nil
 }
 
