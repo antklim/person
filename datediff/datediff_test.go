@@ -93,6 +93,24 @@ func loadDatediffRecordsForTest() ([]datediffRecord, error) {
 	return dr, nil
 }
 
+var testInvalidFormat = []struct {
+	format   string
+	expected string
+}{
+	{
+		format:   "%X%L %S",
+		expected: `format "%X%L %S" has unknown verb X`,
+	},
+	{
+		format:   "   ",
+		expected: "undefined dates difference mode",
+	},
+	{
+		format:   "Years and months",
+		expected: "undefined dates difference mode",
+	},
+}
+
 func TestUnmarshal(t *testing.T) {
 	testCases := []struct {
 		format   string
@@ -146,10 +164,6 @@ func TestUnmarshal(t *testing.T) {
 			format:   "  %y%d  ",
 			expected: datediff.ModeYears | datediff.ModeDays,
 		},
-		{
-			format:   "X",
-			expected: 0,
-		},
 	}
 	for _, tC := range testCases {
 		got, err := datediff.Unmarshal(tC.format)
@@ -162,14 +176,13 @@ func TestUnmarshal(t *testing.T) {
 }
 
 func TestUnmarshalFails(t *testing.T) {
-	format := "%X%L %S"
-	expected := `format "%X%L %S" has unknown verb X`
-
-	got, err := datediff.Unmarshal(format)
-	if err == nil {
-		t.Errorf("Unmarshal(%s) = %v, want to fail due to %s", format, got, expected)
-	} else if err.Error() != expected {
-		t.Errorf("Unmarshal(%s) failed: %v, want to fail due to %s", format, err, expected)
+	for _, tC := range testInvalidFormat {
+		got, err := datediff.Unmarshal(tC.format)
+		if err == nil {
+			t.Errorf("Unmarshal(%s) = %v, want to fail due to %s", tC.format, got, tC.expected)
+		} else if err.Error() != tC.expected {
+			t.Errorf("Unmarshal(%s) failed: %v, want to fail due to %s", tC.format, err, tC.expected)
+		}
 	}
 }
 
@@ -192,46 +205,37 @@ func TestNewDiff(t *testing.T) {
 }
 
 func TestNewDiffFails(t *testing.T) {
-	testCases := []struct {
-		start  time.Time
-		end    time.Time
-		format string
-		err    string
-	}{
-		{
-			start:  time.Now().Add(time.Hour),
-			end:    time.Now(),
-			format: "%D",
-			err:    "start date is after end date",
-		},
-		{
-			start:  time.Now(),
-			end:    time.Now().Add(time.Hour),
-			format: " %Z m",
-			err:    `format " %Z m" has unknown verb Z`,
-		},
-		{
-			start:  time.Now(),
-			end:    time.Now().Add(time.Hour),
-			format: "   ",
-			err:    "undefined dates difference mode",
-		},
-		{
-			start:  time.Now(),
-			end:    time.Now().Add(time.Hour),
-			format: "Years and months",
-			err:    "undefined dates difference mode",
-		},
+	type testcase struct {
+		start    time.Time
+		end      time.Time
+		format   string
+		expected string
+	}
+	testCases := []testcase{{
+		start:    time.Now().Add(time.Hour),
+		end:      time.Now(),
+		format:   "%D",
+		expected: "start date is after end date",
+	}}
+
+	for _, v := range testInvalidFormat {
+		tC := testcase{
+			start:    time.Now(),
+			end:      time.Now().Add(time.Hour),
+			format:   v.format,
+			expected: v.expected,
+		}
+		testCases = append(testCases, tC)
 	}
 
 	for _, tC := range testCases {
 		got, err := datediff.NewDiff(tC.start, tC.end, tC.format)
 		if err == nil {
 			t.Errorf("NewDiff(%s, %s, %s) = %v, want to fail due to %s",
-				tC.start.Format(dateFmt), tC.end.Format(dateFmt), tC.format, got, tC.err)
-		} else if err.Error() != tC.err {
+				tC.start.Format(dateFmt), tC.end.Format(dateFmt), tC.format, got, tC.expected)
+		} else if err.Error() != tC.expected {
 			t.Errorf("NewDiff(%s, %s, %s) failed: %v, want to fail due to %s",
-				tC.start.Format(dateFmt), tC.end.Format(dateFmt), tC.format, err, tC.err)
+				tC.start.Format(dateFmt), tC.end.Format(dateFmt), tC.format, err, tC.expected)
 		}
 	}
 }
@@ -284,25 +288,7 @@ func TestFormatFails(t *testing.T) {
 			start.Format(dateFmt), end.Format(dateFmt), format, err)
 	}
 
-	testCases := []struct {
-		format   string
-		expected string
-	}{
-		{
-			format:   "%Z",
-			expected: `format "%Z" has unknown verb Z`,
-		},
-		{
-			format:   "   ",
-			expected: "undefined dates difference mode",
-		},
-		{
-			format:   "Years and months",
-			expected: "undefined dates difference mode",
-		},
-	}
-
-	for _, tC := range testCases {
+	for _, tC := range testInvalidFormat {
 		got, err := diff.Format(tC.format)
 		if err == nil {
 			t.Errorf("Format(%s) = %v, want to fail due to %s", tC.format, got, tC.expected)
