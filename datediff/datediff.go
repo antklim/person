@@ -52,6 +52,10 @@ func unmarshal(rawFormat string) (DiffMode, error) {
 		}
 	}
 
+	if mode == 0 {
+		return 0, errUndefinedDiffMode
+	}
+
 	return mode, nil
 }
 
@@ -97,9 +101,6 @@ func NewDiff(start, end time.Time, rawFormat string) (Diff, error) {
 	if err != nil {
 		return Diff{}, err
 	}
-	if mode == 0 {
-		return Diff{}, errUndefinedDiffMode
-	}
 
 	diff := Diff{rawFormat: rawFormat}
 
@@ -142,18 +143,30 @@ func (d Diff) Equal(other Diff) bool {
 
 // Format formats dates difference accordig to provided format.
 func (d Diff) Format(rawFormat string) (string, error) {
-	mode, err := unmarshal(rawFormat)
+	_, err := unmarshal(rawFormat)
 	if err != nil {
 		return "", err
-	}
-	if mode == 0 {
-		return "", errUndefinedDiffMode
 	}
 	return format(d, rawFormat), nil
 }
 
+// FormatWithZeros formats dates difference accordig to provided format.
+func (d Diff) FormatWithZeros(rawFormat string) (string, error) {
+	_, err := unmarshal(rawFormat)
+	if err != nil {
+		return "", err
+	}
+	return formatWithZeros(d, rawFormat), nil
+}
+
 // String formats dates difference according to the format provided at
-// initialization of dates difference.
+// initialization of dates difference. Time units that have 0 value omitted.
 func (d Diff) String() string {
 	return format(d, d.rawFormat)
+}
+
+// StringWithZeros formats dates difference according to the format provided at
+// initialization of dates difference. It keeps time units values that are 0.
+func (d Diff) StringWithZeros() string {
+	return formatWithZeros(d, d.rawFormat)
 }
