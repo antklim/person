@@ -21,8 +21,18 @@ var formatUnits = map[string]string{
 
 // format formats dates difference according to the provided format.
 // It trims time units with 0 values.
-func format(diff Diff, rawFormat string) string { // nolint
-	return ""
+func format(diff Diff, rawFormat string) string {
+	result := rawFormat
+
+	frmt(diff, rawFormat, func(n int, verb, unit string) {
+		if n == 0 {
+			result = zeroVerbReplace(result, verb)
+		} else {
+			result = verbReplace(result, n, verb, unit)
+		}
+	})
+
+	return result
 }
 
 // format formats dates difference according to the provided format.
@@ -30,10 +40,16 @@ func format(diff Diff, rawFormat string) string { // nolint
 func formatWithZeros(diff Diff, rawFormat string) string {
 	result := rawFormat
 
-	// TODO: add feature to trim verb when unit value is 0
+	frmt(diff, rawFormat, func(n int, verb, unit string) {
+		result = verbReplace(result, n, verb, unit)
+	})
 
+	return result
+}
+
+func frmt(diff Diff, rawFormat string, replace func(n int, verb, unit string)) {
 	for verb, unit := range formatUnits {
-		if strings.Contains(result, verb) {
+		if strings.Contains(rawFormat, verb) {
 			var n int
 			switch unit {
 			case "year":
@@ -45,15 +61,9 @@ func formatWithZeros(diff Diff, rawFormat string) string {
 			case "day":
 				n = diff.Days
 			}
-			replacement := strconv.Itoa(n)
-			if r := rune(verb[1]); unicode.IsUpper(r) {
-				replacement = formatNoun(n, unit)
-			}
-			result = strings.ReplaceAll(result, verb, replacement)
+			replace(n, verb, unit)
 		}
 	}
-
-	return result
 }
 
 func fullYearsDiff(start, end time.Time) (years int) {
@@ -98,4 +108,17 @@ func formatNoun(n int, s string) string {
 		f += "s"
 	}
 	return fmt.Sprintf(f, n, s)
+}
+
+func verbReplace(s string, n int, verb, unit string) string {
+	replacement := strconv.Itoa(n)
+	if r := rune(verb[1]); unicode.IsUpper(r) {
+		replacement = formatNoun(n, unit)
+	}
+	return strings.ReplaceAll(s, verb, replacement)
+}
+
+func zeroVerbReplace(s, verb string) string {
+	s = strings.ReplaceAll(s, " "+verb, "")
+	return strings.ReplaceAll(s, verb, "")
 }

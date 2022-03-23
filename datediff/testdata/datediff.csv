@@ -50,15 +50,15 @@
 2000-04-17,2003-04-17,%m meses,0,36,0,0,36 meses,36 meses
 2000-04-17,2003-04-17,%w semanas,0,0,156,0,156 semanas,156 semanas
 2000-04-17,2003-04-17,%d dias,0,0,0,1095,1095 dias,1095 dias
-2000-04-17,2003-04-17,%y anos %m meses,3,0,0,0,3 anos,3 anos 0 meses
-2000-04-17,2003-04-17,%y anos %w semanas,3,0,0,0,3 anos,3 anos 0 semanas
-2000-04-17,2003-04-17,%y anos %d dias,3,0,0,0,3 anos,3 anos 0 dias
-2000-04-17,2003-04-17,%m meses %w semanas,0,36,0,0,36 meses,36 meses 0 semanas
-2000-04-17,2003-04-17,%m meses %d dias,0,36,0,0,36 meses,36 meses 0 dias
+2000-04-17,2003-04-17,%y anos %m meses,3,0,0,0,3 anos meses,3 anos 0 meses
+2000-04-17,2003-04-17,%y anos %w semanas,3,0,0,0,3 anos semanas,3 anos 0 semanas
+2000-04-17,2003-04-17,%y anos %d dias,3,0,0,0,3 anos dias,3 anos 0 dias
+2000-04-17,2003-04-17,%m meses %w semanas,0,36,0,0,36 meses semanas,36 meses 0 semanas
+2000-04-17,2003-04-17,%m meses %d dias,0,36,0,0,36 meses dias,36 meses 0 dias
 2000-04-17,2003-04-17,%w semanas %d dias,0,0,156,3,156 semanas 3 dias,156 semanas 3 dias
-2000-04-17,2003-04-17,%y anos %m meses %w semanas,3,0,0,0,3 anos,3 anos 0 meses 0 semanas
-2000-04-17,2003-04-17,%y anos %m meses %d dias,3,0,0,0,3 anos,3 anos 0 meses 0 dias
-2000-04-17,2003-04-17,%y anos %w semanas %d dias,3,0,0,0,3 anos,3 anos 0 semanas 0 dias
-2000-04-17,2003-04-17,%m meses %w semanas %d dias,0,36,0,0,36 meses,36 meses 0 semanas 0 dias
-2000-04-17,2003-04-17,%y anos %m meses %w semanas %d dias,3,0,0,0,3 anos,3 anos 0 meses 0 semanas 0 dias
+2000-04-17,2003-04-17,%y anos %m meses %w semanas,3,0,0,0,3 anos meses semanas,3 anos 0 meses 0 semanas
+2000-04-17,2003-04-17,%y anos %m meses %d dias,3,0,0,0,3 anos meses dias,3 anos 0 meses 0 dias
+2000-04-17,2003-04-17,%y anos %w semanas %d dias,3,0,0,0,3 anos semanas dias,3 anos 0 semanas 0 dias
+2000-04-17,2003-04-17,%m meses %w semanas %d dias,0,36,0,0,36 meses semanas dias,36 meses 0 semanas 0 dias
+2000-04-17,2003-04-17,%y anos %m meses %w semanas %d dias,3,0,0,0,3 anos meses semanas dias,3 anos 0 meses 0 semanas 0 dias
 2000-01-01,2010-04-14,%y anos %d dias,10,0,0,103,10 anos 103 dias,10 anos 103 dias
