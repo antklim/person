@@ -28,17 +28,22 @@ func AgeOn(dob, date time.Time, rawFormat string) (string, error) {
 }
 
 // IsAdult returns if a person with provided date of birth is adult.
-// Second parameter is an adult age in years. If a person's full years of age is
-// greater or equal to the provided adult age then the function returns true.
+// Adult age parameter is the minimum amount of full year a
+// person should have to be considered an adult. If the person's age in years
+// is greater or equal to the adult age the function returns true.
 // It returns an error when the provided date of birth is in the future.
 func IsAdult(dob time.Time, adultAge int) (bool, error) {
 	return isAdultOn(dob, time.Now(), adultAge)
 }
 
-// // WARN: not implemented
-// func IsAdultOn(dob, date time.Time, adultAge int) bool {
-// 	return isAdultOn(dob, date, adultAge)
-// }
+// IsAdultOn returns if a person with provided date of birth is adult on a
+// specific date. Adult age parameter is the minimum amount of full year a
+// person should have to be considered an adult. If the person's age in years
+// is greater or equal to the adult age the function returns true.
+// It returns an error when provided date is before the date of birth (dob).
+func IsAdultOn(dob, date time.Time, adultAge int) (bool, error) {
+	return isAdultOn(dob, date, adultAge)
+}
 
 func ageOn(dob, date time.Time, rawFormat string) (string, error) {
 	if dob.After(date) {
