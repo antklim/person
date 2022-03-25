@@ -27,13 +27,13 @@ func AgeOn(dob, date time.Time, rawFormat string) (string, error) {
 	return ageOn(dob, date, rawFormat)
 }
 
-// // IsAdult returns if a person with provided date of birth is adult.
-// // adultAge in years
-// // WARN: not implemented
-// func IsAdult(dob time.Time, adultAge int) bool {
-// 	now := time.Now()
-// 	return isAdultOn(dob, now, adultAge)
-// }
+// IsAdult returns if a person with provided date of birth is adult.
+// Second parameter is an adult age in years. If a person's full years of age is
+// greater or equal to the provided adult age then the function returns true.
+// It returns an error when the provided date of birth is in the future.
+func IsAdult(dob time.Time, adultAge int) (bool, error) {
+	return isAdultOn(dob, time.Now(), adultAge)
+}
 
 // // WARN: not implemented
 // func IsAdultOn(dob, date time.Time, adultAge int) bool {
@@ -44,13 +44,20 @@ func ageOn(dob, date time.Time, rawFormat string) (string, error) {
 	if dob.After(date) {
 		return "", errDobIsInTheFuture
 	}
-	d, err := datediff.NewDiff(dob, date, rawFormat)
+	age, err := datediff.NewDiff(dob, date, rawFormat)
 	if err != nil {
 		return "", err
 	}
-	return d.String(), nil
+	return age.String(), nil
 }
 
-// func isAdultOn(dob, date time.Time, adultAge int) bool {
-// 	panic("not implemented")
-// }
+func isAdultOn(dob, date time.Time, adultAge int) (bool, error) {
+	if dob.After(date) {
+		return false, errDobIsInTheFuture
+	}
+	age, err := datediff.NewDiff(dob, time.Now(), "%y")
+	if err != nil {
+		return false, err
+	}
+	return age.Years >= adultAge, nil
+}
