@@ -1,92 +1,117 @@
 package person_test
 
 import (
+	"encoding/csv"
+	"os"
 	"testing"
 	"time"
 
 	"github.com/antklim/person"
 )
 
-// TODO: use CSV test data in all tests that calculate and output age
-
 const dateFmt = "2006-01-02"
+
+// these are the fields of testdata/age.csv
+const (
+	dobFld = iota
+	ondateFld
+	formatFld
+	printFld
+)
+
+type ageRecord struct {
+	dob    time.Time
+	ondate time.Time
+	format string
+	print  string
+}
+
+func loadAgeRecord(r []string) (ageRecord, error) {
+	dob, err := time.Parse(dateFmt, r[dobFld])
+	if err != nil {
+		return ageRecord{}, err
+	}
+	ondate, err := time.Parse(dateFmt, r[ondateFld])
+	if err != nil {
+		return ageRecord{}, err
+	}
+
+	return ageRecord{
+		dob:    dob,
+		ondate: ondate,
+		format: r[formatFld],
+		print:  r[printFld],
+	}, nil
+}
+
+func loadAgeRecordsForTest() ([]ageRecord, error) {
+	f, err := os.Open("testdata/age.csv")
+	if err != nil {
+		return nil, err
+	}
+	defer f.Close()
+
+	r := csv.NewReader(f)
+	r.Comment = '#'
+	rawRecords, err := r.ReadAll()
+	if err != nil {
+		return nil, err
+	}
+
+	var dr []ageRecord
+	for _, rr := range rawRecords {
+		r, err := loadAgeRecord(rr)
+		if err != nil {
+			return nil, err
+		}
+		dr = append(dr, r)
+	}
+	return dr, nil
+}
+
+var testInvalidAgeInputs = []struct {
+	dob      time.Time
+	ondate   time.Time
+	format   string
+	expected string
+}{
+	{
+		dob:      time.Now().Add(24 * time.Hour),
+		ondate:   time.Now(),
+		format:   "%D",
+		expected: "date of birth is in the future",
+	},
+	{
+		format:   " %Z m",
+		expected: `format " %Z m" has unknown verb Z`,
+	},
+}
 
 func TestAge(t *testing.T) {
 	now := time.Now()
+	dob := now.AddDate(-11, 1, 2)
 	format := "%Y"
-	testCases := []struct {
-		dob      time.Time
-		expected string
-	}{
-		{
-			dob:      now.AddDate(-2, 1, 2),
-			expected: "1 year",
-		},
-		{
-			dob:      now.AddDate(-3, 1, 2),
-			expected: "2 years",
-		},
-		{
-			dob:      now.AddDate(-11, 1, 2),
-			expected: "10 years",
-		},
-		{
-			dob:      now.AddDate(-12, 1, 2),
-			expected: "11 years",
-		},
-		{
-			dob:      now.AddDate(-13, 1, 2),
-			expected: "12 years",
-		},
-		{
-			dob:      now.AddDate(-22, 1, 2),
-			expected: "21 years",
-		},
-		{
-			dob:      now.AddDate(-112, 1, 2),
-			expected: "111 years",
-		},
-	}
-	for _, tC := range testCases {
-		got, err := person.Age(tC.dob, format)
-		if err != nil {
-			t.Logf("now: %s", now.Format(dateFmt))
-			t.Errorf("Age(%s, %s) failed: %v", tC.dob.Format(dateFmt), format, err)
-		} else if got != tC.expected {
-			t.Logf("now: %s", now.Format(dateFmt))
-			t.Errorf("Age(%s, %s) = %s, want %s", tC.dob.Format(dateFmt), format,
-				got, tC.expected)
-		}
+
+	want := "10 years"
+	got, err := person.Age(dob, format)
+	if err != nil {
+		t.Errorf("Age(%s, %s) failed: %v", dob.Format(dateFmt), format, err)
+	} else if got != want {
+		t.Logf("now: %s", now.Format(dateFmt))
+		t.Errorf("Age(%s, %s) = %s, want %s", dob.Format(dateFmt), format, got, want)
 	}
 }
 
 func TestAgeFails(t *testing.T) {
-	testCases := []struct {
-		dob    time.Time
-		format string
-		err    string
-	}{
-		{
-			dob:    time.Now().Add(time.Second),
-			format: "%D",
-			err:    "date of birth is in the future",
-		},
-		{
-			dob:    time.Now().AddDate(-2, 1, 0),
-			format: " %Z m",
-			err:    `format " %Z m" has unknown verb Z`,
-		},
-	}
-
-	for _, tC := range testCases {
+	for _, tC := range testInvalidAgeInputs {
 		got, err := person.Age(tC.dob, tC.format)
 		if err == nil {
 			t.Fatalf("Age(%s, %s) = %s, want to fail due to %s", tC.dob.Format(dateFmt),
-				tC.format, got, tC.err)
+				tC.format, got, tC.expected)
 		} else {
-			if err.Error() != tC.err {
+			if err.Error() != tC.expected {
 				t.Errorf("Age(%s, %s) failed: %v, want to fail due to %s",
-					tC.dob.Format(dateFmt), tC.format, err, tC.err)
+					tC.dob.Format(dateFmt), tC.format, err, tC.expected)
 			}
 			if got != "" {
 				t.Errorf("Age(%s, %s) = %s, want formatted date to be an empty string",
@@ -97,89 +122,37 @@ func TestAgeFails(t *testing.T) {
 }
 
 func TestAgeOn(t *testing.T) {
-	dob := time.Date(1991, time.April, 1, 13, 17, 0, 0, time.UTC)
-	testCases := []struct {
-		date     time.Time
-		format   string
-		expected string
-	}{
-		{
-			date:     time.Date(1991, time.April, 3, 13, 17, 0, 0, time.UTC),
-			format:   "%D",
-			expected: "2 days",
-		},
-		{
-			date:     time.Date(1991, time.April, 2, 13, 17, 0, 0, time.UTC),
-			format:   "%D",
-			expected: "1 day",
-		},
-		{
-			date:     time.Date(1992, time.April, 2, 0, 0, 0, 0, time.UTC),
-			format:   "%Y",
-			expected: "1 year",
-		},
-		{
-			date:     time.Date(1993, time.April, 2, 0, 0, 0, 0, time.UTC),
-			format:   "%Y",
-			expected: "2 years",
-		},
-		{
-			date:     time.Date(2003, time.April, 2, 0, 0, 0, 0, time.UTC),
-			format:   "%Y",
-			expected: "12 years",
-		},
-		{
-			date:     time.Date(2012, time.April, 2, 0, 0, 0, 0, time.UTC),
-			format:   "%Y",
-			expected: "21 years",
-		},
+	testCases, err := loadAgeRecordsForTest()
+	if err != nil {
+		t.Fatal(err)
 	}
 
 	for _, tC := range testCases {
-		got, err := person.AgeOn(dob, tC.date, tC.format)
+		got, err := person.AgeOn(tC.dob, tC.ondate, tC.format)
 		if err != nil {
-			t.Errorf("AgeOn(%s, %s, %s) failed: %v", dob.Format(dateFmt),
-				tC.date.Format(dateFmt), tC.format, err)
-		} else if got != tC.expected {
-			t.Errorf("AgeOn(%s, %s, %s) = %s, want %s", dob.Format(dateFmt),
-				tC.date.Format(dateFmt), tC.format, got, tC.expected)
+			t.Errorf("AgeOn(%s, %s, %s) failed: %v", tC.dob.Format(dateFmt),
+				tC.ondate.Format(dateFmt), tC.format, err)
+		} else if got != tC.print {
+			t.Errorf("AgeOn(%s, %s, %s) = %s, want %s", tC.dob.Format(dateFmt),
+				tC.ondate.Format(dateFmt), tC.format, got, tC.print)
 		}
 	}
 }
 
 func TestAgeOnFails(t *testing.T) {
-	dob := time.Date(1991, time.April, 1, 13, 17, 0, 0, time.UTC)
-
-	testCases := []struct {
-		date   time.Time
-		format string
-		err    string
-	}{
-		{
-			date:   dob.Add(-time.Second),
-			format: "%D",
-			err:    "date of birth is in the future",
-		},
-		{
-			date:   dob.AddDate(1, 1, 1),
-			format: " %G %f_+",
-			err:    `format " %G %f_+" has unknown verb G`,
-		},
-	}
-
-	for _, tC := range testCases {
-		got, err := person.AgeOn(dob, tC.date, tC.format)
+	for _, tC := range testInvalidAgeInputs {
+		got, err := person.AgeOn(tC.dob, tC.ondate, tC.format)
 		if err == nil {
-			t.Fatalf("AgeOn(%s, %s, %s) = %s, want to fail due to %s", dob.Format(dateFmt),
-				tC.date.Format(dateFmt), tC.format, got, tC.err)
+			t.Fatalf("AgeOn(%s, %s, %s) = %s, want to fail due to %s", tC.dob.Format(dateFmt),
+				tC.ondate.Format(dateFmt), tC.format, got, tC.expected)
 		} else {
-			if err.Error() != tC.err {
+			if err.Error() != tC.expected {
 				t.Errorf("AgeOn(%s, %s, %s) failed: %v, want to fail due to %s",
-					dob.Format(dateFmt), tC.date.Format(dateFmt), tC.format, err, tC.err)
+					tC.dob.Format(dateFmt), tC.ondate.Format(dateFmt), tC.format, err, tC.expected)
 			}
 			if got != "" {
 				t.Errorf("AgeOn(%s, %s, %s) = %s, want formatted date to be an empty string",
-					dob.Format(dateFmt), tC.date.Format(dateFmt), tC.format, got)
+					tC.dob.Format(dateFmt), tC.ondate.Format(dateFmt), tC.format, got)
 			}
 		}
 	}
