@@ -1,5 +1,7 @@
 # person
 
+[![codecov](https://codecov.io/gh/antklim/person/branch/master/graph/badge.svg?token=B94ZN8UGS9)](https://codecov.io/gh/antklim/person)
+
 The `person` package provides methods that allow you to work with personal information.
 
 # Installation
