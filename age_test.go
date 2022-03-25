@@ -157,3 +157,90 @@ func TestAgeOnFails(t *testing.T) {
 		}
 	}
 }
+
+var testCasesIsAdult = []struct {
+	dob      time.Time
+	ondate   time.Time
+	adultAge int
+	expected bool
+}{
+	{
+		dob:      time.Now().AddDate(-20, 0, 0),
+		ondate:   time.Now().AddDate(-2, 0, 0),
+		adultAge: 18,
+		expected: true,
+	},
+	{
+		dob:      time.Now().AddDate(-20, 0, 0),
+		ondate:   time.Now().AddDate(-2, 0, 0),
+		adultAge: 21,
+		expected: false,
+	},
+}
+
+func TestIsAdult(t *testing.T) {
+	for _, tC := range testCasesIsAdult {
+		got, err := person.IsAdult(tC.dob, tC.adultAge)
+		if err != nil {
+			t.Errorf("IsAdult(%s, %d) failed: %v",
+				tC.dob.Format(dateFmt), tC.adultAge, err)
+		} else if got != tC.expected {
+			t.Errorf("IsAdult(%s, %d) = %t, want %t",
+				tC.dob.Format(dateFmt), tC.adultAge, got, tC.expected)
+		}
+	}
+}
+
+func TestIsAdultFails(t *testing.T) {
+	dob := time.Now().Add(time.Hour)
+	adultAge := 18
+	expected := "date of birth is in the future"
+	got, err := person.IsAdult(dob, adultAge)
+	if err == nil {
+		t.Fatalf("IsAdult(%s, %d) = %t, want to fail due %s",
+			dob.Format(dateFmt), adultAge, got, expected)
+	} else {
+		if err.Error() != expected {
+			t.Errorf("IsAdult(%s, %d) failed: %v, want to fail due to %s",
+				dob.Format(dateFmt), adultAge, err, expected)
+		}
+		if got != false {
+			t.Errorf("IsAdult(%s, %d) = %t, want to be false",
+				dob.Format(dateFmt), adultAge, got)
+		}
+	}
+}
+
+func TestIsAdultOn(t *testing.T) {
+	for _, tC := range testCasesIsAdult {
+		got, err := person.IsAdultOn(tC.dob, tC.ondate, tC.adultAge)
+		if err != nil {
+			t.Errorf("IsAdultOn(%s, %s, %d) failed: %v",
+				tC.dob.Format(dateFmt), tC.ondate.Format(dateFmt), tC.adultAge, err)
+		} else if got != tC.expected {
+			t.Errorf("IsAdultOn(%s, %s, %d) = %t, want %t",
+				tC.dob.Format(dateFmt), tC.ondate.Format(dateFmt), tC.adultAge, got, tC.expected)
+		}
+	}
+}
+
+func TestIsAdultOnFails(t *testing.T) {
+	dob := time.Now()
+	ondate := time.Now().AddDate(0, 0, -1)
+	adultAge := 18
+	expected := "date of birth is in the future"
+	got, err := person.IsAdultOn(dob, ondate, adultAge)
+	if err == nil {
+		t.Fatalf("IsAdultOn(%s, %s, %d) = %t, want to fail due %s",
+			dob.Format(dateFmt), ondate.Format(dateFmt), adultAge, got, expected)
+	} else {
+		if err.Error() != expected {
+			t.Errorf("IsAdultOn(%s, %s, %d) failed: %v, want to fail due to %s",
+				dob.Format(dateFmt), ondate.Format(dateFmt), adultAge, err, expected)
+		}
+		if got != false {
+			t.Errorf("IsAdultOn(%s, %s, %d) = %t, want to be false",
+				dob.Format(dateFmt), ondate.Format(dateFmt), adultAge, got)
+		}
+	}
+}
