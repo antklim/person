@@ -3,6 +3,7 @@ package person_test
 import (
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/antklim/person"
 )
@@ -47,4 +48,22 @@ func ExampleFullNameFormatFunc() {
 	// Johann - Bach
 }
 
-// TODO: Add Age examples
+func ExampleAgeOn() {
+	dob, _ := time.Parse("2006-01-02", "2000-01-01")
+	ondate, _ := time.Parse("2006-01-02", "2003-03-16")
+	age, _ := person.AgeOn(dob, ondate, "%Y %M %D")
+	fmt.Println(age)
+
+	// Output:
+	// 3 years 2 months 15 days
+}
+
+func ExampleIsAdult() {
+	dob, _ := time.Parse("2006-01-02", "2000-01-01")
+	adultAge := 18
+	isAdult, _ := person.IsAdult(dob, adultAge)
+	fmt.Println(isAdult)
+
+	// Output:
+	// true
+}
