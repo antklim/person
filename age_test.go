@@ -69,6 +69,24 @@ func loadAgeRecordsForTest() ([]ageRecord, error) {
 	return dr, nil
 }
 
+var testInvalidAgeInputs = []struct {
+	dob      time.Time
+	ondate   time.Time
+	format   string
+	expected string
+}{
+	{
+		dob:      time.Now().Add(24 * time.Hour),
+		ondate:   time.Now(),
+		format:   "%D",
+		expected: "date of birth is in the future",
+	},
+	{
+		format:   " %Z m",
+		expected: `format " %Z m" has unknown verb Z`,
+	},
+}
+
 func TestAge(t *testing.T) {
 	now := time.Now()
 	dob := now.AddDate(-11, 1, 2)
@@ -85,32 +103,15 @@ func TestAge(t *testing.T) {
 }
 
 func TestAgeFails(t *testing.T) {
-	testCases := []struct {
-		dob    time.Time
-		format string
-		err    string
-	}{
-		{
-			dob:    time.Now().Add(time.Second),
-			format: "%D",
-			err:    "date of birth is in the future",
-		},
-		{
-			dob:    time.Now().AddDate(-2, 1, 0),
-			format: " %Z m",
-			err:    `format " %Z m" has unknown verb Z`,
-		},
-	}
-
-	for _, tC := range testCases {
+	for _, tC := range testInvalidAgeInputs {
 		got, err := person.Age(tC.dob, tC.format)
 		if err == nil {
 			t.Fatalf("Age(%s, %s) = %s, want to fail due to %s", tC.dob.Format(dateFmt),
-				tC.format, got, tC.err)
+				tC.format, got, tC.expected)
 		} else {
-			if err.Error() != tC.err {
+			if err.Error() != tC.expected {
 				t.Errorf("Age(%s, %s) failed: %v, want to fail due to %s",
-					tC.dob.Format(dateFmt), tC.format, err, tC.err)
+					tC.dob.Format(dateFmt), tC.format, err, tC.expected)
 			}
 			if got != "" {
 				t.Errorf("Age(%s, %s) = %s, want formatted date to be an empty string",
@@ -139,38 +140,19 @@ func TestAgeOn(t *testing.T) {
 }
 
 func TestAgeOnFails(t *testing.T) {
-	dob := time.Date(1991, time.April, 1, 13, 17, 0, 0, time.UTC)
-
-	testCases := []struct {
-		date   time.Time
-		format string
-		err    string
-	}{
-		{
-			date:   dob.Add(-time.Second),
-			format: "%D",
-			err:    "date of birth is in the future",
-		},
-		{
-			date:   dob.AddDate(1, 1, 1),
-			format: " %G %f_+",
-			err:    `format " %G %f_+" has unknown verb G`,
-		},
-	}
-
-	for _, tC := range testCases {
-		got, err := person.AgeOn(dob, tC.date, tC.format)
+	for _, tC := range testInvalidAgeInputs {
+		got, err := person.AgeOn(tC.dob, tC.ondate, tC.format)
 		if err == nil {
-			t.Fatalf("AgeOn(%s, %s, %s) = %s, want to fail due to %s", dob.Format(dateFmt),
-				tC.date.Format(dateFmt), tC.format, got, tC.err)
+			t.Fatalf("AgeOn(%s, %s, %s) = %s, want to fail due to %s", tC.dob.Format(dateFmt),
+				tC.ondate.Format(dateFmt), tC.format, got, tC.expected)
 		} else {
-			if err.Error() != tC.err {
+			if err.Error() != tC.expected {
 				t.Errorf("AgeOn(%s, %s, %s) failed: %v, want to fail due to %s",
-					dob.Format(dateFmt), tC.date.Format(dateFmt), tC.format, err, tC.err)
+					tC.dob.Format(dateFmt), tC.ondate.Format(dateFmt), tC.format, err, tC.expected)
 			}
 			if got != "" {
 				t.Errorf("AgeOn(%s, %s, %s) = %s, want formatted date to be an empty string",
-					dob.Format(dateFmt), tC.date.Format(dateFmt), tC.format, got)
+					tC.dob.Format(dateFmt), tC.ondate.Format(dateFmt), tC.format, got)
 			}
 		}
 	}
