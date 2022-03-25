@@ -158,29 +158,35 @@ func TestAgeOnFails(t *testing.T) {
 	}
 }
 
-func TestIsAdult(t *testing.T) {
-	dob := time.Now().AddDate(-20, 0, 0)
+var testCasesIsAdult = []struct {
+	dob      time.Time
+	ondate   time.Time
+	adultAge int
+	expected bool
+}{
+	{
+		dob:      time.Now().AddDate(-20, 0, 0),
+		ondate:   time.Now().AddDate(-2, 0, 0),
+		adultAge: 18,
+		expected: true,
+	},
+	{
+		dob:      time.Now().AddDate(-20, 0, 0),
+		ondate:   time.Now().AddDate(-2, 0, 0),
+		adultAge: 21,
+		expected: false,
+	},
+}
 
-	testCases := []struct {
-		adultAge int
-		expected bool
-	}{
-		{
-			adultAge: 18,
-			expected: true,
-		},
-		{
-			adultAge: 21,
-			expected: false,
-		},
-	}
-	for _, tC := range testCases {
-		got, err := person.IsAdult(dob, tC.adultAge)
+func TestIsAdult(t *testing.T) {
+	for _, tC := range testCasesIsAdult {
+		got, err := person.IsAdult(tC.dob, tC.adultAge)
 		if err != nil {
-			t.Errorf("IsAdult(%s, %d) failed: %v", dob.Format(dateFmt), tC.adultAge, err)
+			t.Errorf("IsAdult(%s, %d) failed: %v",
+				tC.dob.Format(dateFmt), tC.adultAge, err)
 		} else if got != tC.expected {
-			t.Errorf("IsAdult(%s, %d) = %t, want %t", dob.Format(dateFmt),
-				tC.adultAge, got, tC.expected)
+			t.Errorf("IsAdult(%s, %d) = %t, want %t",
+				tC.dob.Format(dateFmt), tC.adultAge, got, tC.expected)
 		}
 	}
 }
@@ -206,30 +212,14 @@ func TestIsAdultFails(t *testing.T) {
 }
 
 func TestIsAdultOn(t *testing.T) {
-	dob := time.Now().AddDate(-20, 0, 0)
-	ondate := time.Now().AddDate(-2, 0, 0)
-
-	testCases := []struct {
-		adultAge int
-		expected bool
-	}{
-		{
-			adultAge: 18,
-			expected: true,
-		},
-		{
-			adultAge: 21,
-			expected: false,
-		},
-	}
-	for _, tC := range testCases {
-		got, err := person.IsAdultOn(dob, ondate, tC.adultAge)
+	for _, tC := range testCasesIsAdult {
+		got, err := person.IsAdultOn(tC.dob, tC.ondate, tC.adultAge)
 		if err != nil {
 			t.Errorf("IsAdultOn(%s, %s, %d) failed: %v",
-				dob.Format(dateFmt), ondate.Format(dateFmt), tC.adultAge, err)
+				tC.dob.Format(dateFmt), tC.ondate.Format(dateFmt), tC.adultAge, err)
 		} else if got != tC.expected {
 			t.Errorf("IsAdultOn(%s, %s, %d) = %t, want %t",
-				dob.Format(dateFmt), ondate.Format(dateFmt), tC.adultAge, got, tC.expected)
+				tC.dob.Format(dateFmt), tC.ondate.Format(dateFmt), tC.adultAge, got, tC.expected)
 		}
 	}
 }
