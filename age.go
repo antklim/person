@@ -4,7 +4,7 @@ import (
 	"errors"
 	"time"
 
-	"github.com/antklim/person/datediff"
+	"github.com/antklim/datediff"
 )
 
 var (
