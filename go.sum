@@ -1,2 +1,4 @@
 github.com/antklim/datediff v0.1.0 h1:KntAFH+PXgowShDRbi1G5xg2zZ1Sw8JExGLr49tahyw=
 github.com/antklim/datediff v0.1.0/go.mod h1:6SvN4m8jma/usPNR6OZYCAy9qKAeYr4zGcZxRzx55Ao=
+github.com/antklim/datediff v0.2.1 h1:nLxzTwlU/YpsIGhCTkraQa3uTgKoq2atNJQaPKoQ98w=
+github.com/antklim/datediff v0.2.1/go.mod h1:6SvN4m8jma/usPNR6OZYCAy9qKAeYr4zGcZxRzx55Ao=
